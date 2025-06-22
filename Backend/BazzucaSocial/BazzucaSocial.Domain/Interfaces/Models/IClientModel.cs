@@ -14,5 +14,6 @@ namespace BazzucaSocial.Domain.Interfaces.Models
         IClientModel GetById(long clientId, IClientDomainFactory factory);
         IClientModel Insert(IClientDomainFactory factory);
         IClientModel Update(IClientDomainFactory factory);
+        void Delete(long clientId);
     }
 }

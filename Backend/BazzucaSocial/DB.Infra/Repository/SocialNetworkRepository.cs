@@ -39,12 +39,11 @@ namespace DB.Infra.Repository
             row.Password = model.Password;
         }
 
-        public IEnumerable<ISocialNetworkModel> ListByUser(long userId, int take, ISocialNetworkDomainFactory factory)
+        public IEnumerable<ISocialNetworkModel> ListByClient(long clientId, ISocialNetworkDomainFactory factory)
         {
             var rows = _context.SocialNetworks
-                .Where(x => x.Client.UserId == userId)
+                .Where(x => x.ClientId == clientId && x.Active)
                 .OrderBy(x => x.NetworkKey)
-                .Take(take)
                 .ToList();
             return rows.Select(x => DbToModel(factory, x));
         }
@@ -52,6 +51,10 @@ namespace DB.Infra.Repository
         public ISocialNetworkModel GetById(long networkId, ISocialNetworkDomainFactory factory)
         {
             var row = _context.SocialNetworks.Find(networkId);
+            if (row == null || !row.Active)
+            {
+                return null;
+            }
             return row == null ? null : DbToModel(factory, row);
         }
 
@@ -59,6 +62,7 @@ namespace DB.Infra.Repository
         {
             var entity = new SocialNetwork();
             ModelToDb(model, entity);
+            entity.Active = true; // Assuming new entities are active by default
             _context.Add(entity);
             _context.SaveChanges();
             model.NetworkId = entity.NetworkId;
@@ -68,10 +72,26 @@ namespace DB.Infra.Repository
         public ISocialNetworkModel Update(ISocialNetworkModel model, ISocialNetworkDomainFactory factory)
         {
             var row = _context.SocialNetworks.FirstOrDefault(x => x.NetworkId == model.NetworkId);
+            if (row == null || !row.Active)
+            {
+                throw new KeyNotFoundException($"Social Network with ID {model.NetworkId} not found.");
+            }
             ModelToDb(model, row);
             _context.SocialNetworks.Update(row);
             _context.SaveChanges();
             return model;
+        }
+
+        public void Delete(long networkId)
+        {
+            var row = _context.SocialNetworks.Find(networkId);
+            if (row == null || !row.Active)
+            {
+                throw new KeyNotFoundException($"Social Network with ID {networkId} not found.");
+            }
+            row.Active = false; // Soft delete by marking as inactive
+            _context.SocialNetworks.Update(row);
+            _context.SaveChanges();
         }
     }
 }

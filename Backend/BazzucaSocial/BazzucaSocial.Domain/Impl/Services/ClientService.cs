@@ -35,7 +35,7 @@ namespace BazzucaSocial.Domain.Impl.Services
         {
             if (model == null)
             {
-                throw new ArgumentException("Model não informado");
+                return null;
             }
             return new ClientInfo
             {
@@ -71,6 +71,11 @@ namespace BazzucaSocial.Domain.Impl.Services
             model.Name = client.Name;
 
             return model.Update(_clientFactory);
+        }
+
+        public void Delete(long clientId)
+        {
+            _clientFactory.BuildClientModel().Delete(clientId);
         }
     }
 }

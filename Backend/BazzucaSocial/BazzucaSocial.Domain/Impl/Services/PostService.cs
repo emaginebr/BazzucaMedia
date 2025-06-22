@@ -12,19 +12,31 @@ namespace BazzucaSocial.Domain.Impl.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPostDomainFactory _postFactory;
+        private readonly IClientDomainFactory _clientFactory;
+        private readonly ISocialNetworkDomainFactory _networkFactory;
+        private readonly IClientService _clientService;
+        private readonly ISocialNetworkService _networkService;
 
         public PostService(
             IUnitOfWork unitOfWork,
-            IPostDomainFactory postFactory
+            IPostDomainFactory postFactory,
+            IClientDomainFactory clientFactory,
+            ISocialNetworkDomainFactory networkFactory,
+            IClientService clientService,
+            ISocialNetworkService networkService
         )
         {
             _unitOfWork = unitOfWork;
             _postFactory = postFactory;
+            _clientFactory = clientFactory;
+            _networkFactory = networkFactory;
+            _clientService = clientService;
+            _networkService = networkService;
         }
 
-        public IEnumerable<IPostModel> ListByUser(long userId, int take)
+        public IEnumerable<IPostModel> ListByUser(long userId)
         {
-            return _postFactory.BuildPostModel().ListByUser(userId, take, _postFactory);
+            return _postFactory.BuildPostModel().ListByUser(userId, _postFactory);
         }
 
         public IPostModel GetById(long postId)
@@ -47,7 +59,9 @@ namespace BazzucaSocial.Domain.Impl.Services
                 ScheduleDate = model.ScheduleDate,
                 Title = model.Title,
                 Description = model.Description,
-                Status = model.Status
+                Status = model.Status,
+                Client = _clientService.GetClientInfo(model.GetClient(_clientFactory)),
+                SocialNetwork = _networkService.GetNetworkInfo(model.GetSocialNetwork(_networkFactory))
             };
         }
 

@@ -25,8 +25,8 @@ namespace BazzucaSocial.Domain.Impl.Models
         public string User { get; set; }
         public string Password { get; set; }
 
-        public IEnumerable<ISocialNetworkModel> ListByUser(long userId, int take, ISocialNetworkDomainFactory factory)
-            => _repository.ListByUser(userId, take, factory);
+        public IEnumerable<ISocialNetworkModel> ListByClient(long clientId, ISocialNetworkDomainFactory factory)
+            => _repository.ListByClient(clientId, factory);
 
         public ISocialNetworkModel GetById(long networkId, ISocialNetworkDomainFactory factory)
             => _repository.GetById(networkId, factory);
@@ -36,5 +36,8 @@ namespace BazzucaSocial.Domain.Impl.Models
 
         public ISocialNetworkModel Update(ISocialNetworkDomainFactory factory)
             => _repository.Update(this, factory);
+
+        public void Delete(long networkId) 
+            => _repository.Delete(networkId);
     }
 }

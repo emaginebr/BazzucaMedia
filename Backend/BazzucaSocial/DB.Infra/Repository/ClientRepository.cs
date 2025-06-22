@@ -35,7 +35,7 @@ namespace DB.Infra.Repository
         public IEnumerable<IClientModel> ListByUser(long userId, IClientDomainFactory factory)
         {
             var rows = _context.Clients
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userId && x.Active)
                 .OrderBy(x => x.Name)
                 .ToList();
             return rows.Select(x => DbToModel(factory, x));
@@ -44,6 +44,10 @@ namespace DB.Infra.Repository
         public IClientModel GetById(long clientId, IClientDomainFactory factory)
         {
             var row = _context.Clients.Find(clientId);
+            if (row == null || !row.Active)
+            {
+                return null;
+            }
             return row == null ? null : DbToModel(factory, row);
         }
 
@@ -51,6 +55,7 @@ namespace DB.Infra.Repository
         {
             var entity = new Client();
             ModelToDb(model, entity);
+            entity.Active = true;
             _context.Add(entity);
             _context.SaveChanges();
             model.ClientId = entity.ClientId;
@@ -60,10 +65,26 @@ namespace DB.Infra.Repository
         public IClientModel Update(IClientModel model, IClientDomainFactory factory)
         {
             var row = _context.Clients.FirstOrDefault(x => x.ClientId == model.ClientId);
+            if (row == null || !row.Active)
+            {
+                throw new KeyNotFoundException($"Client with ID {model.ClientId} not found.");
+            }
             ModelToDb(model, row);
             _context.Clients.Update(row);
             _context.SaveChanges();
             return model;
+        }
+
+        public void Delete(long clientId)
+        {
+            var row = _context.Clients.Find(clientId);
+            if (row == null || !row.Active)
+            {
+                throw new KeyNotFoundException($"Client with ID {clientId} not found.");
+            }
+            row.Active = false; // Soft delete
+            _context.Clients.Update(row);
+            _context.SaveChanges();
         }
     }
 }

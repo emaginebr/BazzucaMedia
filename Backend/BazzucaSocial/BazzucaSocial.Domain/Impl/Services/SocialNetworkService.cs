@@ -23,9 +23,9 @@ namespace BazzucaSocial.Domain.Impl.Services
             _factory = factory;
         }
 
-        public IList<ISocialNetworkModel> ListByUser(long userId, int take)
+        public IList<ISocialNetworkModel> ListByClient(long clientId)
         {
-            return _factory.BuildSocialNetworkModel().ListByUser(userId, take, _factory).ToList();
+            return _factory.BuildSocialNetworkModel().ListByClient(clientId, _factory).ToList();
         }
 
         public ISocialNetworkModel GetById(long id)
@@ -83,6 +83,11 @@ namespace BazzucaSocial.Domain.Impl.Services
             model.Password = network.Password;
 
             return model.Update(_factory);
+        }
+
+        public void Delete(long networkId)
+        {
+            _factory.BuildSocialNetworkModel().Delete(networkId);
         }
     }
 }

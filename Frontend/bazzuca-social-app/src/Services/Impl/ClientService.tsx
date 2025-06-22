@@ -1,6 +1,6 @@
 import ClientListResult from "@/DTO/Services/ClientListResult";
 import ClientResult from "@/DTO/Services/ClientResult";
-import { IHttpClient } from "nauth-core";
+import { IHttpClient, StatusRequest } from "nauth-core";
 import IClientService from "../Interfaces/IClientService";
 import ClientInfo from "@/DTO/Domain/ClientInfo";
 
@@ -57,6 +57,20 @@ const ClientService : IClientService = {
     update: async (client: ClientInfo, token: string) => {
         let ret: ClientResult;
         let request = await _httpClient.doPostAuth<ClientResult>("/Client/update", client, token);
+        if (request.success) {
+            return request.data;
+        } else {
+            ret = {
+                mensagem: request.messageError,
+                sucesso: false,
+                ...ret
+            };
+        }
+        return ret;
+    },
+    delete: async (clientId: number, token: string) => {
+        let ret: StatusRequest;
+        let request = await _httpClient.doGetAuth<StatusRequest>("/Client/delete/" + clientId, token);
         if (request.success) {
             return request.data;
         } else {

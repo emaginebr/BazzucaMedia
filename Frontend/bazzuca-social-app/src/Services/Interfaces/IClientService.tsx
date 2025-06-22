@@ -1,7 +1,7 @@
 import ClientInfo from "@/DTO/Domain/ClientInfo";
 import ClientListResult from "@/DTO/Services/ClientListResult";
 import ClientResult from "@/DTO/Services/ClientResult";
-import { IHttpClient } from "nauth-core";
+import { IHttpClient, StatusRequest } from "nauth-core";
 
 export default interface IClientService {
     init: (httpClient : IHttpClient) => void;
@@ -9,4 +9,5 @@ export default interface IClientService {
     getById: (clientId: number, token: string) => Promise<ClientResult>;
     insert: (client: ClientInfo, token: string) => Promise<ClientResult>;
     update: (client: ClientInfo, token: string) => Promise<ClientResult>;
+    delete: (clientId: number, token: string) => Promise<StatusRequest>;
 }

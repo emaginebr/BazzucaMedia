@@ -124,6 +124,35 @@ const ClientBusiness: IClientBusiness = {
     } catch {
       throw new Error("Failed to update client");
     }
+  },
+  delete: async (id: number) => {
+    try {
+      let ret: BusinessResult<boolean>;
+      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      if (!session) {
+        return {
+          ...ret,
+          sucesso: false,
+          mensagem: "Not logged"
+        };
+      }
+      let retServ = await _clientService.delete(id, session.token);
+      if (retServ.sucesso) {
+        return {
+          ...ret,
+          dataResult: retServ.sucesso,
+          sucesso: true
+        };
+      } else {
+        return {
+          ...ret,
+          sucesso: false,
+          mensagem: retServ.mensagem
+        };
+      }
+    } catch {
+      throw new Error("Failed to delete client");
+    }
   }
 }
 

@@ -24,7 +24,7 @@ namespace DB.Infra.Repository
             model.NetworkId = row.NetworkId;
             model.ClientId = row.ClientId;
             model.ScheduleDate = row.ScheduleDate;
-            model.PostType = row.PostType;
+            model.PostType = (PostTypeEnum) row.PostType;
             model.S3Key = row.S3Key;
             model.Title = row.Title;
             model.Status = (PostStatusEnum)row.Status;
@@ -38,19 +38,18 @@ namespace DB.Infra.Repository
             row.NetworkId = model.NetworkId;
             row.ClientId = model.ClientId;
             row.ScheduleDate = model.ScheduleDate;
-            row.PostType = model.PostType;
+            row.PostType = (int) model.PostType;
             row.S3Key = model.S3Key;
             row.Title = model.Title;
             row.Status = (int)model.Status;
             row.Description = model.Description;
         }
 
-        public IEnumerable<IPostModel> ListByUser(long userId, int take, IPostDomainFactory factory)
+        public IEnumerable<IPostModel> ListByUser(long userId, IPostDomainFactory factory)
         {
             var rows = _context.Posts
                 .Where(x => x.Client.UserId == userId)
                 .OrderBy(x => x.ScheduleDate)
-                .Take(take)
                 .ToList();
             return rows.Select(x => DbToModel(factory, x));
         }

@@ -17,6 +17,8 @@ public partial class SocialNetwork
 
     public string Password { get; set; }
 
+    public bool Active { get; set; }
+
     public virtual Client Client { get; set; }
 
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();

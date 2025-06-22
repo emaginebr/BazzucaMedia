@@ -1,40 +1,41 @@
 import { useState } from "react";
-import IClientProvider from "./IClientProvider";
+import ISocialNetworkProvider from "./ISocialNetworkProvider";
 import { ProviderResult } from "nauth-core";
-import ClientFactory from "@/Business/Factory/ClientFactory";
-import ClientInfo from "@/DTO/Domain/ClientInfo";
-import ClientContext from "./ClientContext";
+import SocialNetworkFactory from "@/Business/Factory/SocialNetworkFactory";
+import SocialNetworkInfo from "@/DTO/Domain/SocialNetworkInfo";
+import SocialNetworkContext from "./SocialNetworkContext";
 
-export default function ClientProvider(props: any) {
+export default function SocialNetworkProvider(props: any) {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingUpdate, setLoadingUpdate] = useState<boolean>(false);
 
-    const [client, _setClient] = useState<ClientInfo>(null);
-    const [clients, _setClients] = useState<ClientInfo[]>([]);
+    const [network, _setNetwork] = useState<SocialNetworkInfo>(null);
+    const [networks, _setNetworks] = useState<SocialNetworkInfo[]>([]);
 
-    const clientProviderValue: IClientProvider = {
+    const SocialNetworkProviderValue: ISocialNetworkProvider = {
         loading: loading,
         loadingUpdate: loadingUpdate,
 
-        client: client,
-        setClient: (client: ClientInfo) => {
-            _setClient(client);
+        network: network,
+        setNetwork: (SocialNetwork: SocialNetworkInfo) => {
+            _setNetwork(SocialNetwork);
         },
 
-        clients: clients,
-        setClients: (clients: ClientInfo[]) => {
-            _setClients(clients);
+        networks: networks,
+        setNetworks: (networks: SocialNetworkInfo[]) => {
+            _setNetworks(networks);
         },
 
-        listByUser: async () => {
+        listByClient: async (clientId: number) => {
             let ret: Promise<ProviderResult>;
+            _setNetworks([]);
             setLoading(true);
             try {
-                let brt = await ClientFactory.ClientBusiness.listByUser();
+                let brt = await SocialNetworkFactory.SocialNetworkBusiness.listByClient(clientId);
                 if (brt.sucesso) {
                     setLoading(false);
-                    _setClients(brt.dataResult);
+                    _setNetworks(brt.dataResult);
                     return {
                         ...ret,
                         sucesso: true,
@@ -60,14 +61,14 @@ export default function ClientProvider(props: any) {
             }
         },
 
-        getById: async (clientId: number) => {
+        getById: async (SocialNetworkId: number) => {
             let ret: Promise<ProviderResult>;
             setLoading(true);
             try {
-                let brt = await ClientFactory.ClientBusiness.getById(clientId);
+                let brt = await SocialNetworkFactory.SocialNetworkBusiness.getById(SocialNetworkId);
                 if (brt.sucesso) {
                     setLoading(false);
-                    _setClient(brt.dataResult);
+                    _setNetwork(brt.dataResult);
                     return {
                         ...ret,
                         sucesso: true,
@@ -92,14 +93,14 @@ export default function ClientProvider(props: any) {
                 };
             }
         },
-        insert: async (client: ClientInfo) => {
+        insert: async (SocialNetwork: SocialNetworkInfo) => {
             let ret: Promise<ProviderResult>;
             setLoadingUpdate(true);
             try {
-                let brt = await ClientFactory.ClientBusiness.insert(client);
+                let brt = await SocialNetworkFactory.SocialNetworkBusiness.insert(SocialNetwork);
                 if (brt.sucesso) {
                     setLoadingUpdate(false);
-                    _setClient(brt.dataResult);
+                    _setNetwork(brt.dataResult);
                     return {
                         ...ret,
                         sucesso: true,
@@ -125,14 +126,14 @@ export default function ClientProvider(props: any) {
             }
         },
 
-        update: async (client: ClientInfo) => {
+        update: async (SocialNetwork: SocialNetworkInfo) => {
             let ret: Promise<ProviderResult>;
             setLoadingUpdate(true);
             try {
-                let brt = await ClientFactory.ClientBusiness.update(client);
+                let brt = await SocialNetworkFactory.SocialNetworkBusiness.update(SocialNetwork);
                 if (brt.sucesso) {
                     setLoadingUpdate(false);
-                    _setClient(brt.dataResult);
+                    _setNetwork(brt.dataResult);
                     return {
                         ...ret,
                         sucesso: true,
@@ -149,6 +150,37 @@ export default function ClientProvider(props: any) {
                 }
             }
             catch (err) {
+                setLoadingUpdate(false);
+                return {
+                    ...ret,
+                    sucesso: false,
+                    mensagemErro: JSON.stringify(err)
+                };
+            }
+        },
+
+        delete: async (SocialNetworkId: number) => {
+            let ret: Promise<ProviderResult>;
+            setLoadingUpdate(true);
+            try {
+                let brt = await SocialNetworkFactory.SocialNetworkBusiness.delete(SocialNetworkId);
+                if (brt.sucesso) {
+                    setLoadingUpdate(false);
+                    _setNetwork(null);
+                    return {
+                        ...ret,
+                        sucesso: true,
+                        mensagemSucesso: "User deleted"
+                    };
+                } else {
+                    setLoadingUpdate(false);
+                    return {
+                        ...ret,
+                        sucesso: false,
+                        mensagemErro: brt.mensagem
+                    };
+                }
+            } catch (err) {
                 setLoadingUpdate(false);
                 return {
                     ...ret,
@@ -160,8 +192,8 @@ export default function ClientProvider(props: any) {
     }
 
     return (
-        <ClientContext.Provider value={clientProviderValue}>
+        <SocialNetworkContext.Provider value={SocialNetworkProviderValue}>
             {props.children}
-        </ClientContext.Provider>
+        </SocialNetworkContext.Provider>
     );
 }

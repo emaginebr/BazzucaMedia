@@ -11,5 +11,6 @@ namespace BazzucaSocial.Domain.Interfaces.Services
         ClientInfo GetClientInfo(IClientModel model);
         IClientModel Insert(ClientInfo client);
         IClientModel Update(ClientInfo client);
+        void Delete(long clientId);
     }
 }

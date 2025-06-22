@@ -33,5 +33,8 @@ namespace BazzucaSocial.Domain.Impl.Models
 
         public IClientModel Update(IClientDomainFactory factory)
             => _repository.Update(this, factory);
+
+        public void Delete(long clientId) 
+            => _repository.Delete(clientId);
     }
 }

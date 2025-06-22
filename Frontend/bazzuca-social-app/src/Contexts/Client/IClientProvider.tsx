@@ -15,6 +15,7 @@ interface IClientProvider {
     getById: (clientId: number) => Promise<ProviderResult>;
     insert: (client: ClientInfo) => Promise<ProviderResult>;
     update: (client: ClientInfo) => Promise<ProviderResult>;
+    delete: (clientId: number) => Promise<ProviderResult>;
 }
 
 export default IClientProvider;

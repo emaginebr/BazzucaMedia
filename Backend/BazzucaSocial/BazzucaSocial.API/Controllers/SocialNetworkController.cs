@@ -25,9 +25,9 @@ namespace BazzucaSocial.API.Controllers
             _networkService = networkService;
         }
 
-        [HttpGet("listByUser/{userId}")]
+        [HttpGet("listByClient/{clientId}")]
         [Authorize]
-        public ActionResult<SocialNetworkListResult> ListByUser(long userId, int take)
+        public ActionResult<SocialNetworkListResult> ListByClient(long clientId)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace BazzucaSocial.API.Controllers
                 {
                     return StatusCode(401, "Not Authorized");
                 }
-                var companies = _networkService.ListByUser(userId, take);
+                var companies = _networkService.ListByClient(clientId);
 
                 return new SocialNetworkListResult()
                 {
@@ -117,6 +117,30 @@ namespace BazzucaSocial.API.Controllers
                 return new SocialNetworkResult
                 {
                     Value = _networkService.GetNetworkInfo(networkReturn)
+                };
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("delete/{networkId}")]
+        [Authorize]
+        public ActionResult<StatusResult> Delete(long networkId)
+        {
+            try
+            {
+                var userSession = _userClient.GetUserInSession(HttpContext);
+                if (userSession == null)
+                {
+                    return StatusCode(401, "Not Authorized");
+                }
+                _networkService.Delete(networkId);
+
+                return new StatusResult
+                {
+                    Sucesso = true
                 };
             }
             catch (Exception ex)

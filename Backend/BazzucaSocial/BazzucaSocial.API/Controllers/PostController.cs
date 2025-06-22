@@ -26,9 +26,9 @@ namespace BazzucaSocial.API.Controllers
             _postService = postService;
         }
 
-        [HttpGet("listByUser/{userId}")]
+        [HttpGet("listByUser")]
         [Authorize]
-        public ActionResult<PostListResult> ListByUser(long userId, int take)
+        public ActionResult<PostListResult> ListByUser()
         {
             try
             {
@@ -37,7 +37,7 @@ namespace BazzucaSocial.API.Controllers
                 {
                     return StatusCode(401, "Not Authorized");
                 }
-                var posts = _postService.ListByUser(userId, take);
+                var posts = _postService.ListByUser(userSession.UserId);
 
                 return new PostListResult
                 {

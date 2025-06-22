@@ -37,8 +37,8 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 12 27 48;
-    --sidebar-foreground: 172 58 171;
+    --sidebar-background: #0c1b30; /*12 27 48;*/
+    --sidebar-foreground: 12 27 48;
     --sidebar-primary: 67 84 192;
     --sidebar-primary-foreground: 172 58 171;
     --sidebar-accent: 172 58 171;

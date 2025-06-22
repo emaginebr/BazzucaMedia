@@ -34,6 +34,9 @@ public partial class BazzucaContext : DbContext
             entity.ToTable("clients");
 
             entity.Property(e => e.ClientId).HasColumnName("client_id");
+            entity.Property(e => e.Active)
+                .HasDefaultValue(true)
+                .HasColumnName("active");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(80)
@@ -87,6 +90,9 @@ public partial class BazzucaContext : DbContext
             entity.ToTable("social_networks");
 
             entity.Property(e => e.NetworkId).HasColumnName("network_id");
+            entity.Property(e => e.Active)
+                .HasDefaultValue(true)
+                .HasColumnName("active");
             entity.Property(e => e.ClientId).HasColumnName("client_id");
             entity.Property(e => e.NetworkKey).HasColumnName("network_key");
             entity.Property(e => e.Password)

@@ -23,14 +23,32 @@ namespace BazzucaSocial.Domain.Impl.Models
         public long NetworkId { get; set; }
         public long ClientId { get; set; }
         public DateTime ScheduleDate { get; set; }
-        public int PostType { get; set; }
+        public PostTypeEnum PostType { get; set; }
         public string S3Key { get; set; }
         public string Title { get; set; }
         public PostStatusEnum Status { get; set; }
         public string Description { get; set; }
 
-        public IEnumerable<IPostModel> ListByUser(long userId, int take, IPostDomainFactory factory)
-            => _repository.ListByUser(userId, take, factory);
+        public ISocialNetworkModel GetSocialNetwork(ISocialNetworkDomainFactory factory)
+        {
+            if (!(NetworkId > 0))
+            {
+                return null;
+            }
+            return factory.BuildSocialNetworkModel().GetById(NetworkId, factory);
+        }
+
+        public IClientModel GetClient(IClientDomainFactory factory)
+        {
+            if (!(ClientId > 0))
+            {
+                return null;
+            }
+            return factory.BuildClientModel().GetById(ClientId, factory);
+        }
+
+        public IEnumerable<IPostModel> ListByUser(long userId, IPostDomainFactory factory)
+            => _repository.ListByUser(userId, factory);
 
         public IPostModel GetById(long postId, IPostDomainFactory factory)
             => _repository.GetById(postId, factory);

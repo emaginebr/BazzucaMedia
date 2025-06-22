@@ -11,7 +11,7 @@ namespace BazzucaSocial.DTO.SocialNetwork
     {
         [JsonPropertyName("networkId")]
         public long NetworkId { get; set; }
-        [JsonPropertyName("ClientId")]
+        [JsonPropertyName("clientId")]
         public long ClientId { get; set; }
         [JsonPropertyName("network")]
         public SocialNetworkEnum Network { get; set; }

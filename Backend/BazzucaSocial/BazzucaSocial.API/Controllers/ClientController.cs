@@ -129,5 +129,29 @@ namespace BazzucaSocial.API.Controllers
             }
         }
 
+        [HttpGet("delete/{clientId}")]
+        [Authorize]
+        public ActionResult<StatusResult> Delete(long clientId)
+        {
+            try
+            {
+                var userSession = _userClient.GetUserInSession(HttpContext);
+                if (userSession == null)
+                {
+                    return StatusCode(401, "Not Authorized");
+                }
+                _clientService.Delete(clientId);
+
+                return new StatusResult
+                {
+                    Sucesso = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }

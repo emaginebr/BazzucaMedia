@@ -1,21 +1,29 @@
 
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PostForm } from "@/pages/Post/PostForm";
 import { AuthContext, IAuthProvider } from "nauth-core";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import ClientTable from "./ClientTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import IClientProvider from "@/Contexts/User/IClientProvider";
-import ClientProvider from "@/Contexts/User/ClientProvider";
-import ClientContext from "@/Contexts/User/ClientContext";
+import IClientProvider from "@/Contexts/Client/IClientProvider";
+import ClientProvider from "@/Contexts/Client/ClientProvider";
+import ClientContext from "@/Contexts/Client/ClientContext";
 import { toast } from "sonner";
+import Header from "./Header";
+import ClientDialog from "./ClientDialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import ClientResult from "@/DTO/Services/ClientResult";
 
 
 export default function ClientList() {
+
+    const [isClientOpen, setIsClientOpen] = useState<boolean>(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
+    const [isClientInsertMode, setIsClientInsertMode] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -39,35 +47,87 @@ export default function ClientList() {
     }, []);
 
     return (
-        <SidebarProvider>
-            <div className="min-h-screen flex w-full bg-gradient-dark">
-                <AppSidebar />
-                <main className="flex-1">
-                    <div className="p-6">
-                        {/* Header */}
-                        <div className="flex items-center mb-8">
-                            <Link to="/dashboard">
-                                <Button variant="ghost" className="text-gray-300 hover:text-white mr-4">
-                                    <ArrowLeft className="w-4 h-4 mr-2" />
-                                    Back to Dashboard
-                                </Button>
-                            </Link>
-                            <div>
-                                <h1 className="text-3xl font-bold text-white">Clients List</h1>
-                                <p className="text-gray-400">Schedule your content across social platforms</p>
-                            </div>
+        <>
+            <ConfirmDialog
+                isOpen={isConfirmOpen}
+                loading={clientContext.loadingUpdate}
+                setIsOpen={setIsConfirmOpen}
+                onExecute={async () => {
+                    let ret = await clientContext.delete(clientContext.client?.clientId);
+                    if (!ret.sucesso) {
+                        toast.error(ret.mensagemErro);
+                        return;
+                    }
+                    setIsConfirmOpen(false);
+                    let retList = await clientContext.listByUser();
+                    if (!retList.sucesso) {
+                        toast.error(retList.mensagemErro);
+                        return;
+                    }
+                }}
+            />
+            <ClientDialog
+                isOpen={isClientOpen}
+                loading={clientContext.loadingUpdate}
+                title={isClientInsertMode ? "New Client" : "Edit Client"}
+                name={clientContext.client?.name}
+                setName={(name) => clientContext.setClient({ ...clientContext.client, name })}
+                setIsOpen={setIsClientOpen}
+                onSave={async (name) => {
+                    let ret: ClientResult;
+                    if (isClientInsertMode) {
+                        let ret = await clientContext.insert({ ...clientContext.client, name });
+                        if (!ret.sucesso) {
+                            toast.error(ret.mensagemErro);
+                            return;
+                        }
+                    }
+                    else {
+                        let ret = await clientContext.update(clientContext.client);
+                        if (!ret.sucesso) {
+                            toast.error(ret.mensagemErro);
+                            return;
+                        }
+                    }
+                    setIsClientOpen(false);
+                    let retList = await clientContext.listByUser();
+                    if (!retList.sucesso) {
+                        toast.error(retList.mensagemErro);
+                        return;
+                    }
+                }}
+            />
+            <SidebarProvider>
+                <div className="min-h-screen flex w-full bg-gradient-dark">
+                    <AppSidebar />
+                    <main className="flex-1">
+                        <div className="p-6">
+                            <Header onNewClientClick={() => {
+                                clientContext.setClient(null);
+                                setIsClientInsertMode(true);
+                                setIsClientOpen(true);
+                            }} />
+                            <Card className="bg-brand-dark border-brand-gray/30">
+                                <CardContent>
+                                    <ClientTable
+                                        loading={clientContext.loading}
+                                        clients={clientContext.clients}
+                                        onEdit={(client) => {
+                                            clientContext.setClient(client);
+                                            setIsClientInsertMode(false);
+                                            setIsClientOpen(true);
+                                        }}
+                                        onDelete={(client) => {
+                                            clientContext.setClient(client);
+                                            setIsConfirmOpen(true);
+                                        }}
+                                    />
+                                </CardContent>
+                            </Card>
                         </div>
-                        <Card className="bg-brand-dark border-brand-gray/30">
-                            <CardHeader>
-                                <CardTitle className="text-white">Client List</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <ClientTable loading={clientContext.loading} clients={clientContext.clients} />
-                            </CardContent>
-                        </Card>
-                    </div>
-                </main>
-            </div >
-        </SidebarProvider >
+                    </main>
+                </div >
+            </SidebarProvider >
+        </>
     );
 };

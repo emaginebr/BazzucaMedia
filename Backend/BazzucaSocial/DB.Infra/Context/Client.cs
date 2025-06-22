@@ -11,6 +11,8 @@ public partial class Client
 
     public string Name { get; set; }
 
+    public bool Active { get; set; }
+
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
     public virtual ICollection<SocialNetwork> SocialNetworks { get; set; } = new List<SocialNetwork>();

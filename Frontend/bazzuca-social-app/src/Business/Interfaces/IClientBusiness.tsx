@@ -8,4 +8,5 @@ export default interface IClientBusiness {
   getById: (clientId: number) => Promise<BusinessResult<ClientInfo>>;
   insert: (client: ClientInfo) => Promise<BusinessResult<ClientInfo>>;
   update: (client: ClientInfo) => Promise<BusinessResult<ClientInfo>>;
+  delete: (clientId: number) => Promise<BusinessResult<boolean>>;
 }

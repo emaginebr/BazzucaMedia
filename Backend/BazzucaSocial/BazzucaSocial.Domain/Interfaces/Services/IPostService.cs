@@ -6,7 +6,7 @@ namespace BazzucaSocial.Domain.Interfaces.Services
 {
     public interface IPostService
     {
-        IEnumerable<IPostModel> ListByUser(long userId, int take);
+        IEnumerable<IPostModel> ListByUser(long userId);
         IPostModel GetById(long postId);
         PostInfo GetPostInfo(IPostModel model);
         IPostModel Insert(PostInfo post);

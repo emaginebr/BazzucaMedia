@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BazzucaSocial.DTO.Client;
+using BazzucaSocial.DTO.SocialNetwork;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +20,7 @@ namespace BazzucaSocial.DTO.Post
         [JsonPropertyName("scheduleDate")]
         public DateTime ScheduleDate { get; set; }
         [JsonPropertyName("postType")]
-        public int PostType { get; set; }
+        public PostTypeEnum PostType { get; set; }
         [JsonPropertyName("s3Key")]
         public string S3Key { get; set; }
         [JsonPropertyName("title")]
@@ -27,5 +29,9 @@ namespace BazzucaSocial.DTO.Post
         public PostStatusEnum Status { get; set; }
         [JsonPropertyName("description")]
         public string Description { get; set; }
+        [JsonPropertyName("socialNetwork")]
+        public SocialNetworkInfo SocialNetwork { get; set; }
+        [JsonPropertyName("client")]
+        public ClientInfo Client { get; set; }
     }
 }

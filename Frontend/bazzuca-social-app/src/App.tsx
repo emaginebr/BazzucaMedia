@@ -12,14 +12,20 @@ import Dashboard from "./pages/Dashboard/Index";
 import Post from "./pages/Post/Index";
 import NotFound from "./pages/NotFound";
 import { AuthContext, AuthProvider, ContextBuilder, IAuthProvider, UserProvider } from "nauth-core";
-import ClientProvider from "./Contexts/User/ClientProvider";
+import ClientProvider from "./Contexts/Client/ClientProvider";
 import ClientList from "./pages/ClientList/Index";
+import SocialNetworkProvider from "./Contexts/SocialNetwork/SocialNetworkProvider";
+import ClientDetail from "./pages/ClientDetail/Index";
+import PostProvider from "./Contexts/Post/PostProvider";
 
 const queryClient = new QueryClient();
 
 function App() {
 
-  const ContextContainer = ContextBuilder([AuthProvider, UserProvider, ClientProvider]);
+  const ContextContainer = ContextBuilder([
+    AuthProvider, UserProvider, ClientProvider, SocialNetworkProvider,
+    PostProvider
+  ]);
 
   return (
     <ContextContainer>
@@ -34,7 +40,10 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/clients" element={<ClientList />} />
+              <Route path="/clients">
+                <Route index element={<ClientList />} />
+                <Route path=":clientId" element={<ClientDetail />} />
+              </Route>
               <Route path="/new-post" element={<Post/>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
