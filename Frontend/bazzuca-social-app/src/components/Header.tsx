@@ -35,7 +35,7 @@ export default function Header(param: HeaderProps) {
               </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="secondary" className="flex items-center space-x-2">
+                <Button variant="secondary" className="flex items-center space-x-2 text-black">
                   <User className="h-5 w-5" />
                   <span>{param.sessionInfo?.name}</span>
                   <ChevronDown className="h-4 w-4" />

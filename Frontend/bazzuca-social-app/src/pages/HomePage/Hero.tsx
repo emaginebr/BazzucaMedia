@@ -28,7 +28,7 @@ export default function Hero() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-brand-purple text-brand-white hover:bg-brand-purple hover:text-white">
                 Watch Demo
               </Button>
             </div>

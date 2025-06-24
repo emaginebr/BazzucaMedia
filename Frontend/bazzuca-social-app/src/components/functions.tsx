@@ -1,3 +1,4 @@
+import PostStatusEnum from "@/DTO/Enum/PostStatusEnum";
 import SocialNetworkEnum from "@/DTO/Enum/SocialNetworkEnum";
 import { Facebook, Instagram, Linkedin, LucideProps, MinusCircle, Network, X, Youtube } from "lucide-react";
 import React from "react";
@@ -113,7 +114,24 @@ function socialNetworkFromEnum(network: SocialNetworkEnum): string {
     }
 }
 
+function getPostStatusName(status: PostStatusEnum): string {
+    switch (status) {
+        case PostStatusEnum.Draft:
+            return 'Draft';
+        case PostStatusEnum.Scheduled:
+            return 'Scheduled';
+        case PostStatusEnum.Posted:
+            return 'Posted';
+        case PostStatusEnum.Canceled:
+            return 'Cancelled';
+        case PostStatusEnum.ScheduredOnNetwork:
+            return 'Scheduled on Network';
+        default:
+            return 'Unknown Status';
+    }
+}
+
 export { 
     getNetworkName, getNetworkColor, getNetworkIcon, socialNetworkToEnum, 
-    socialNetworkFromEnum, socialNetworks 
+    socialNetworkFromEnum, getPostStatusName, socialNetworks 
 };
