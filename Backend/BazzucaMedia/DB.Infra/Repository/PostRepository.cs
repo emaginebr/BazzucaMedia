@@ -3,13 +3,17 @@ using BazzucaMedia.Domain.Interfaces.Models;
 using BazzucaMedia.DTO.Post;
 using Core.Domain.Repository;
 using DB.Infra.Context;
+using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 
 namespace DB.Infra.Repository
 {
     public class PostRepository : IPostRepository<IPostModel, IPostDomainFactory>
     {
+        private const int PAGE_SIZE = 15;
+
         private readonly BazzucaContext _context;
 
         public PostRepository(BazzucaContext context)
@@ -45,10 +49,14 @@ namespace DB.Infra.Repository
             row.Description = model.Description;
         }
 
-        public IEnumerable<IPostModel> ListByUser(long userId, IPostDomainFactory factory)
+        public IEnumerable<IPostModel> ListByUser(long userId, DateTime ini, DateTime end, IPostDomainFactory factory)
         {
             var rows = _context.Posts
-                .Where(x => x.Client.UserId == userId)
+                .Where(
+                    x => x.Client.UserId == userId
+                    && x.ScheduleDate >= ini 
+                    && x.ScheduleDate <= end
+                )
                 .OrderBy(x => x.ScheduleDate)
                 .ToList();
             return rows.Select(x => DbToModel(factory, x));
@@ -77,6 +85,33 @@ namespace DB.Infra.Repository
             _context.Posts.Update(row);
             _context.SaveChanges();
             return model;
+        }
+
+        public IEnumerable<IPostModel> Search(long userId, long? clientId, int? status, int pageNum, out int pageCount, IPostDomainFactory factory)
+        {
+            var currentDate = DateTime.Now;
+
+            var q = _context.Posts.Where(
+                x => x.Client.UserId == userId 
+                && x.ScheduleDate >= currentDate.AddMonths(-2)
+                && x.ScheduleDate <= currentDate.AddMonths(2)
+            );
+            if (clientId.HasValue && clientId.Value > 0)
+            {
+                q = q.Where(x => x.ClientId == clientId.Value);
+            }
+            if (status.HasValue && status.Value > 0)
+            {
+                q = q.Where(x => x.Status == status.Value);
+            }
+            var pages = (double)q.Count() / (double)PAGE_SIZE;
+            pageCount = Convert.ToInt32(Math.Ceiling(pages));
+            var rows = q.OrderBy(x => x.ScheduleDate)
+                .ThenBy(x => x.Title)
+                .Skip((pageNum - 1) * PAGE_SIZE)
+                .Take(PAGE_SIZE)
+                .ToList();
+            return rows.Select(x => DbToModel(factory, x));
         }
     }
 }

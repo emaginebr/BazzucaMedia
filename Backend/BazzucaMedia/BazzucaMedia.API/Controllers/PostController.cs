@@ -27,9 +27,9 @@ namespace BazzucaMedia.API.Controllers
             _postService = postService;
         }
 
-        [HttpGet("listByUser")]
+        [HttpGet("listByUser/{month}/{year}")]
         [Authorize]
-        public ActionResult<PostListResult> ListByUser()
+        public ActionResult<PostListResult> ListByUser(int month, int year)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace BazzucaMedia.API.Controllers
                 {
                     return StatusCode(401, "Not Authorized");
                 }
-                var posts = _postService.ListByUser(userSession.UserId);
+                var posts = _postService.ListByUser(userSession.UserId, month, year);
 
                 return new PostListResult
                 {
@@ -120,6 +120,25 @@ namespace BazzucaMedia.API.Controllers
                 {
                     Value = _postService.GetPostInfo(postReturn)
                 };
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("search")]
+        [Authorize]
+        public ActionResult<PostListPagedResult> Search([FromBody] PostSearchParam param)
+        {
+            try
+            {
+                var userSession = _userClient.GetUserInSession(HttpContext);
+                if (userSession == null)
+                {
+                    return StatusCode(401, "Not Authorized");
+                }
+                return _postService.Search(param);
             }
             catch (Exception ex)
             {

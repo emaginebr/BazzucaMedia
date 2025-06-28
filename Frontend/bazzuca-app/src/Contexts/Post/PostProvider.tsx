@@ -6,6 +6,8 @@ import PostInfo from "@/DTO/Domain/PostInfo";
 import PostContext from "./PostContext";
 import ImageFactory from "@/Business/Factory/ImageFactory";
 import PostProviderResult from "@/DTO/Context/PostProviderResult";
+import PostListPagedInfo from "@/DTO/Domain/PostListPagedInfo";
+import PostSearchParam from "@/DTO/Services/PostSearchParam";
 
 export default function PostProvider(props: any) {
 
@@ -14,6 +16,8 @@ export default function PostProvider(props: any) {
 
     const [post, _setPost] = useState<PostInfo>(null);
     const [posts, _setPosts] = useState<PostInfo[]>([]);
+
+    const [searchResult, setSearchResult] = useState<PostListPagedInfo>(null);
 
     const [imageUrl, _setImageUrl] = useState<string>("");
 
@@ -31,16 +35,18 @@ export default function PostProvider(props: any) {
             _setPosts(posts);
         },
 
+        searchResult: searchResult,
+
         imageUrl: imageUrl,
         setImageUrl: (url: string) => {
             _setImageUrl(url);
         },
 
-        listByUser: async () => {
+        listByUser: async (month: number, year: number) => {
             let ret: Promise<ProviderResult>;
             setLoading(true);
             try {
-                let brt = await PostFactory.PostBusiness.listByUser();
+                let brt = await PostFactory.PostBusiness.listByUser(month, year);
                 if (brt.sucesso) {
                     setLoading(false);
                     _setPosts(brt.dataResult);
@@ -68,7 +74,38 @@ export default function PostProvider(props: any) {
                 };
             }
         },
-
+        search: async (param: PostSearchParam) => {
+            let ret: Promise<ProviderResult>;
+            setLoading(true);
+            try {
+                let brt = await PostFactory.PostBusiness.search(param);
+                if (brt.sucesso) {
+                    setLoading(false);
+                    setSearchResult(brt.dataResult);
+                    return {
+                        ...ret,
+                        sucesso: true,
+                        mensagemSucesso: "User load"
+                    };
+                }
+                else {
+                    setLoading(false);
+                    return {
+                        ...ret,
+                        sucesso: false,
+                        mensagemErro: brt.mensagem
+                    };
+                }
+            }
+            catch (err) {
+                setLoading(false);
+                return {
+                    ...ret,
+                    sucesso: false,
+                    mensagemErro: JSON.stringify(err)
+                };
+            }
+        },
         getById: async (PostId: number) => {
             let ret: Promise<PostProviderResult>;
             setLoading(true);

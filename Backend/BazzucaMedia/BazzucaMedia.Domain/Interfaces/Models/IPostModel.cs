@@ -19,9 +19,11 @@ namespace BazzucaMedia.Domain.Interfaces.Models
         ISocialNetworkModel GetSocialNetwork(ISocialNetworkDomainFactory factory);
         IClientModel GetClient(IClientDomainFactory factory);
 
-        IEnumerable<IPostModel> ListByUser(long userId, IPostDomainFactory factory);
+        IEnumerable<IPostModel> ListByUser(long userId, DateTime start, DateTime end, IPostDomainFactory factory);
         IPostModel GetById(long postId, IPostDomainFactory factory);
         IPostModel Insert(IPostDomainFactory factory);
         IPostModel Update(IPostDomainFactory factory);
+
+        IEnumerable<IPostModel> Search(long userId, long? clientId, PostStatusEnum? status, int pageNum, out int pageCount, IPostDomainFactory factory);
     }
 }

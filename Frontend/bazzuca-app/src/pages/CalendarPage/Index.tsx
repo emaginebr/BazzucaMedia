@@ -24,6 +24,8 @@ import PostInfo from "@/DTO/Domain/PostInfo";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { enUS } from "date-fns/locale";
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 
 export default function CalendarPage() {
 
@@ -31,7 +33,7 @@ export default function CalendarPage() {
 
     const authContext = useContext<IAuthProvider>(AuthContext);
     const postContext = useContext<IPostProvider>(PostContext);
-    
+
     const [events, setEvents] = useState<any[]>([]);
 
     const locales = {
@@ -46,18 +48,35 @@ export default function CalendarPage() {
         locales,
     });
 
+    const handleRangeChange = (range: any) => {
+        // Para visualização "month", range será um Date
+        const activeDate = Array.isArray(range) ? range[0] : range;
+        const month = activeDate.getMonth() + 1; // getMonth() é zero-based
+        const year = activeDate.getFullYear();
+
+        postContext.listByUser(month, year).then((retPost) => {
+            if (!retPost.sucesso) {
+                toast.error(retPost.mensagemErro);
+                return;
+            }
+        });
+    };
+
     useEffect(() => {
-        authContext.loadUserSession().then((ret) => {
+        authContext.loadUserSession().then(async (ret) => {
             if (!authContext.sessionInfo) {
                 navigate("/login");
                 return;
             }
-            postContext.listByUser().then((retPost) => {
-                if (!retPost.sucesso) {
-                    toast.error(retPost.mensagemErro);
-                    return;
-                }
-            });
+            let currentDate: Date = new Date();
+            const month = currentDate.getMonth() + 1; // getMonth() is zero-based
+            const year = currentDate.getFullYear();
+
+            let retPost = await postContext.listByUser(month, year);
+            if (!retPost.sucesso) {
+                toast.error(retPost.mensagemErro);
+                return;
+            }
         })
     }, []);
 
@@ -95,6 +114,32 @@ export default function CalendarPage() {
         navigate(`/posts/${event.id}`);
     };
 
+    const handleEventDrop = async ({ event, start }: any) => {
+        const post = event.resource as PostInfo;
+        const updatedPost = { ...post, scheduleDate: start.toISOString() };
+
+        const result = await postContext.update(updatedPost);
+
+        if (!result.sucesso) {
+            toast.error(result.mensagemErro);
+            return;
+        }
+
+        // Atualiza a posição localmente
+        setEvents(prev =>
+            prev.map(ev =>
+                ev.id === event.id
+                    ? { ...ev, start: start, end: start, resource: updatedPost }
+                    : ev
+            )
+        );
+
+        toast.success("Post atualizado com nova data!");
+    };
+
+
+    const DnDCalendar = withDragAndDrop(Calendar);
+
     return (
         <>
             <SidebarProvider>
@@ -106,13 +151,16 @@ export default function CalendarPage() {
                             <Card className="bg-brand-dark border-brand-gray/30">
                                 <CardContent className="p-6">
                                     <div style={{ height: '700px' }}> {/* Adjust height as needed */}
-                                        <Calendar
+                                        <DnDCalendar
                                             localizer={localizer}
                                             events={events}
                                             startAccessor="start"
                                             endAccessor="end"
+                                            onRangeChange={handleRangeChange}
                                             onSelectEvent={handleSelectEvent}
-                                            eventPropGetter={eventPropGetter} // Apply the custom event properties
+                                            onEventDrop={handleEventDrop}
+                                            draggableAccessor={() => true}
+                                            eventPropGetter={eventPropGetter}
                                             style={{ height: '100%' }}
                                             className="text-white bg-dark border border-gray-600 rounded-md"
                                         />

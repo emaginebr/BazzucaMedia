@@ -6,6 +6,7 @@ using BazzucaMedia.DTO.SocialNetwork;
 using Core.Domain;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BazzucaMedia.Domain.Impl.Services
@@ -39,9 +40,32 @@ namespace BazzucaMedia.Domain.Impl.Services
             _s3Service = s3Service;
         }
 
-        public IEnumerable<IPostModel> ListByUser(long userId)
+        private static (DateTime Start, DateTime End) GetExtendedMonthRange(int month, int year)
         {
-            return _postFactory.BuildPostModel().ListByUser(userId, _postFactory);
+            // Primeiro dia do mês
+            var firstOfMonth = new DateTime(year, month, 1);
+
+            // Último dia do mês
+            var lastOfMonth = firstOfMonth.AddMonths(1).AddDays(-1);
+
+            // Buscar o sábado antes ou igual ao primeiro dia
+            var start = firstOfMonth;
+            while (start.DayOfWeek != DayOfWeek.Saturday)
+                start = start.AddDays(-1);
+
+            // Buscar o domingo depois ou igual ao último dia
+            var end = lastOfMonth;
+            while (end.DayOfWeek != DayOfWeek.Sunday)
+                end = end.AddDays(1);
+
+            return (start.Date, end.Date);
+        }
+
+        public IEnumerable<IPostModel> ListByUser(long userId, int month, int year)
+        {
+            var (start, end) = GetExtendedMonthRange(month, year);
+
+            return _postFactory.BuildPostModel().ListByUser(userId, start, end, _postFactory);
         }
 
         public IPostModel GetById(long postId)
@@ -113,6 +137,30 @@ namespace BazzucaMedia.Domain.Impl.Services
             model.Status = post.Status;
 
             return model.Update(_postFactory);
+        }
+
+        public PostListPagedResult Search(PostSearchParam param)
+        {
+
+            var model = _postFactory.BuildPostModel();
+            int pageCount = 0;
+            var posts = model.Search(
+                param.UserId,
+                param.ClientId,
+                param.Status,
+                param.PageNum,
+                out pageCount, 
+                _postFactory
+             )
+             .Select(x => GetPostInfo(x))
+             .ToList();
+            return new PostListPagedResult
+            {
+                Sucesso = true,
+                Posts = posts,
+                PageNum = param.PageNum,
+                PageCount = pageCount
+            };
         }
 
         private IPublisherService GetPublisherService(SocialNetworkEnum socialNetwork)
