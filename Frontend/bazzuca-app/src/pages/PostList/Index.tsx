@@ -8,16 +8,12 @@ import { AuthContext, IAuthProvider } from "nauth-core";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import IClientProvider from "@/Contexts/Client/IClientProvider";
-import ClientProvider from "@/Contexts/Client/ClientProvider";
-import ClientContext from "@/Contexts/Client/ClientContext";
 import { toast } from "sonner";
 import Header from "./Header";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import ClientResult from "@/DTO/Services/ClientResult";
 import IPostProvider from "@/Contexts/Post/IPostProvider";
 import PostContext from "@/Contexts/Post/PostContext";
 import PostTable from "./PostTable";
+import PostSearchParam from "@/DTO/Services/PostSearchParam";
 
 
 export default function PostList() {
@@ -25,22 +21,31 @@ export default function PostList() {
     const navigate = useNavigate();
 
     const authContext = useContext<IAuthProvider>(AuthContext);
-    const clientContext = useContext<IClientProvider>(ClientContext);
+    //const clientContext = useContext<IClientProvider>(ClientContext);
     const postContext = useContext<IPostProvider>(PostContext);
+
+    const searchPost = async (pageNum: number) => {
+        let param: PostSearchParam = {
+            userId: authContext.sessionInfo.userId,
+            clientId: null,
+            status: null,
+            pageNum: pageNum,
+        };
+        let ret = await postContext.search(param);
+        if (!ret.sucesso) {
+            toast.error(ret.mensagemErro);
+            return;
+        }
+    };
 
 
     useEffect(() => {
-        authContext.loadUserSession().then((ret) => {
+        authContext.loadUserSession().then(async (ret) => {
             if (!authContext.sessionInfo) {
                 navigate("/login");
                 return;
             }
-            postContext.listByUser().then((retPost) => {
-                if (!retPost.sucesso) {
-                    toast.error(retPost.mensagemErro);
-                    return;
-                }
-            });
+            await searchPost(1);
         })
     }, []);
 
@@ -56,7 +61,8 @@ export default function PostList() {
                                 <CardContent>
                                     <PostTable
                                         loading={postContext.loading}
-                                        posts={postContext.posts}
+                                        searchResult={postContext.searchResult}
+                                        changePage={(pageNum) => searchPost(pageNum)}
                                     />
                                 </CardContent>
                             </Card>

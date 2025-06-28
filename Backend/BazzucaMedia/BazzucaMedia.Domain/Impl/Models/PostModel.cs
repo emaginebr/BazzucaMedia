@@ -47,8 +47,8 @@ namespace BazzucaMedia.Domain.Impl.Models
             return factory.BuildClientModel().GetById(ClientId, factory);
         }
 
-        public IEnumerable<IPostModel> ListByUser(long userId, IPostDomainFactory factory)
-            => _repository.ListByUser(userId, factory);
+        public IEnumerable<IPostModel> ListByUser(long userId, DateTime start, DateTime end, IPostDomainFactory factory)
+            => _repository.ListByUser(userId, start, end, factory);
 
         public IPostModel GetById(long postId, IPostDomainFactory factory)
             => _repository.GetById(postId, factory);
@@ -58,5 +58,17 @@ namespace BazzucaMedia.Domain.Impl.Models
 
         public IPostModel Update(IPostDomainFactory factory)
             => _repository.Update(this, factory);
+
+        public IEnumerable<IPostModel> Search(long userId, long? clientId, PostStatusEnum? status, int pageNum, out int pageCount, IPostDomainFactory factory)
+        {
+            return _repository.Search(
+                userId, 
+                clientId, 
+                status.HasValue ? (int) status : null, 
+                pageNum, 
+                out pageCount, 
+                factory
+            );
+        }
     }
 }

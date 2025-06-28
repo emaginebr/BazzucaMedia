@@ -3,6 +3,8 @@ import PostResult from "@/DTO/Services/PostResult";
 import { IHttpClient, StatusRequest } from "nauth-core";
 import IPostService from "../Interfaces/IPostService";
 import PostInfo from "@/DTO/Domain/PostInfo";
+import PostSearchParam from "@/DTO/Services/PostSearchParam";
+import PostListPagedResult from "@/DTO/Services/PostListPagedResult";
 
 let _httpPost : IHttpClient;
 
@@ -10,9 +12,24 @@ const PostService : IPostService = {
     init: function (htppPost: IHttpClient): void {
         _httpPost = htppPost;
     },
-    listByUser: async (token: string) => {
+    listByUser: async (month: number, year: number, token: string) => {
         let ret: PostListResult;
-        let request = await _httpPost.doGetAuth<PostListResult>("/Post/listByUser", token);
+        let request = await _httpPost.doGetAuth<PostListResult>("/Post/listByUser/" + month + "/" + year, token);
+        if (request.success) {
+            return request.data;
+        }
+        else {
+            ret = {
+                mensagem: request.messageError,
+                sucesso: false,
+                ...ret
+            };
+        }
+        return ret;
+    },
+    search: async (param: PostSearchParam, token: string) => {
+        let ret: PostListPagedResult;
+        let request = await _httpPost.doPostAuth<PostListPagedResult>("/Post/search", param, token);
         if (request.success) {
             return request.data;
         }
