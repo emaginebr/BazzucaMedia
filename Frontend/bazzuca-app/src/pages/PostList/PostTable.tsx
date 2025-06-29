@@ -85,8 +85,7 @@ export default function PostTable(props: IPostProps) {
                         </TableRow>
                     )}
                     {!props.loading && props.searchResult?.posts.map((post) => (
-                        <>
-                            <TableRow key={post.postId} className="cursor-pointer hover:bg-muted/50">
+                        <TableRow key={post.postId} className="cursor-pointer hover:bg-muted/50">
                                 <TableCell>
                                     <div className="flex items-center space-x-2 text-muted-foreground">
                                         <Link to={`/posts/${post.postId}`}>
@@ -136,7 +135,6 @@ export default function PostTable(props: IPostProps) {
                                     </Link>
                                 </TableCell>
                             </TableRow>
-                        </>
                     ))}
                 </TableBody>
             </Table>

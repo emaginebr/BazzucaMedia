@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "nauth-core": path.resolve(__dirname, "./src/nauth-core"),
     },
   },
 }));
