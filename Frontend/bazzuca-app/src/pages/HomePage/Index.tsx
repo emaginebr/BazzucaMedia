@@ -9,7 +9,7 @@ import { AuthContext, IAuthProvider } from "nauth-core";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
-export default function Index() {
+export default function HomePage() {
 
   const navigate = useNavigate();
 

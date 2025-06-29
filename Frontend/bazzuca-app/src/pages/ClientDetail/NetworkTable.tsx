@@ -69,7 +69,7 @@ export default function NetworkTable(props: INetworkProps) {
                         <TableRow key={network.networkId} className="cursor-pointer hover:bg-muted/50">
                             <TableCell>
                                 <div className="flex items-center space-x-2 text-muted-foreground">
-                                    {getNetworkIcon(network.network)}
+                                    {/*getNetworkIcon(network.network)*/}
                                     <span>{getNetworkName(network.network)}</span>
                                 </div>
                             </TableCell>

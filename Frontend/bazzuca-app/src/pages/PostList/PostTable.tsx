@@ -124,7 +124,7 @@ export default function PostTable(props: IPostProps) {
                                 <TableCell>
                                     <div className="flex items-center space-x-2 text-muted-foreground">
                                         <Link to={`/posts/${post.postId}`}>
-                                            {getPostStatusBadge(post.status)}
+                                            {/*getPostStatusBadge(post.status)*/}
                                         </Link>
                                     </div>
                                 </TableCell>

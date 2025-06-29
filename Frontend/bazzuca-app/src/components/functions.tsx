@@ -77,6 +77,7 @@ function getNetworkColor(network: SocialNetworkEnum): string {
     }
 }
 
+/*
 function getNetworkIcon(network: SocialNetworkEnum): React.JSX.Element {
     switch (network) {
         case SocialNetworkEnum.X:
@@ -95,6 +96,7 @@ function getNetworkIcon(network: SocialNetworkEnum): React.JSX.Element {
             return <MinusCircle className="h-4 w-4" />;
     }
 }
+*/
 
 function socialNetworkToEnum(network: string): SocialNetworkEnum {
     switch (network) {
@@ -151,6 +153,7 @@ function getPostStatusName(status: PostStatusEnum): string {
     }
 }
 
+/*
 function getPostStatusBadge(status: PostStatusEnum): React.JSX.Element {
     switch (status) {
         case PostStatusEnum.Draft:
@@ -167,9 +170,9 @@ function getPostStatusBadge(status: PostStatusEnum): React.JSX.Element {
             return <Badge variant="secondary" className="bg-brand-blue/20 text-brand-blue border-brand-blue/30">Unknow</Badge>;
     }
 }
-
+*/
 export { 
-    getNetworkBadge, getNetworkName, getNetworkColor, getNetworkIcon, 
-    socialNetworkToEnum, socialNetworkFromEnum, getPostStatusName, getPostStatusBadge,
+    getNetworkBadge, getNetworkName, getNetworkColor, //getNetworkIcon, getPostStatusBadge, 
+    socialNetworkToEnum, socialNetworkFromEnum, getPostStatusName,
     socialNetworks 
 };
