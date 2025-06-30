@@ -1,102 +1,50 @@
-import { createContext, ReactNode } from 'react';
+export { default as AuthContext } from './src/Contexts/Auth/AuthContext';
+export { default as AuthProvider } from './src/Contexts/Auth/AuthProvider';
+export type { default as IAuthProvider } from './src/Contexts/Auth/IAuthProvider';
 
-export interface ProviderResult {
-  sucesso: boolean;
-  mensagemErro?: string;
-  mensagemSucesso?: string;
-  dataResult?: any;
-}
+export { default as UserContext } from './src/Contexts/User/UserContext';
+export { default as UserProvider } from './src/Contexts/User/UserProvider';
+export type { default as IUserProvider } from './src/Contexts/User/IUserProvider';
 
-export interface IAuthProvider {
-  sessionInfo: any;
-  login?: (username: string, password: string) => Promise<ProviderResult>;
-  logout?: () => void;
-}
+export { default as ContextBuilder } from './src/Contexts/Utils/ContextBuilder';
 
-export const AuthContext = createContext<IAuthProvider | null>(null);
+export { default as UserFactory } from './src/Business/Factory/UserFactory';
+export { default as AuthFactory } from './src/Business/Factory/AuthFactory';
+export { default as UserBusiness } from './src/Business/Impl/UserBusiness';
+export { default as AuthBusiness } from './src/Business/Impl/AuthBusiness';
+export type { default as IUserBusiness } from './src/Business/Interfaces/IUserBusiness';
+export type { default as IAuthBusiness } from './src/Business/Interfaces/IAuthBusiness';
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  return <AuthContext.Provider value={null}>{children}</AuthContext.Provider>;
-}
+export { HttpClient } from './src/Infra/Impl/HttpClient';
+export type { default as IHttpClient } from './src/Infra/Interface/IHttpClient';
 
-export function UserProvider({ children }: { children: ReactNode }) {
-  return <>{children}</>;
-}
+export { default as ServiceFactory } from './src/Services/ServiceFactory';
+export type { default as IUserService } from './src/Services/Interfaces/IUserService';
+export { default as UserService } from './src/Services/Impl/UserService';
 
-export function ContextBuilder(
-  providers: Array<React.ComponentType<{ children: ReactNode }>>
-) {
-  return function ContextContainer({ children }: { children: ReactNode }) {
-    return providers.reduceRight(
-      (acc, Provider) => <Provider>{acc}</Provider>,
-      children
-    );
-  };
-}
+export { MessageToastEnum } from './src/DTO/Enum/MessageToastEnum';
+export { LanguageEnum } from './src/DTO/Enum/LanguageEnum';
+export type { default as UserInfo } from './src/DTO/Domain/UserInfo';
+export type { default as UserAddressInfo } from './src/DTO/Domain/UserAddressInfo';
+export type { default as UserPhoneInfo } from './src/DTO/Domain/UserPhoneInfo';
+export type { default as UserEditInfo } from './src/DTO/Domain/UserEditInfo';
+export type { default as UserSearchParam } from './src/DTO/Domain/UserSearchParam';
+export type { default as ImageInfo } from './src/DTO/Domain/ImageInfo';
+export type { default as AuthSession } from './src/DTO/Domain/AuthSession';
 
-export interface AuthSession {
-  token: string;
-  name?: string;
-}
+export type { default as ProviderResult } from './src/DTO/Contexts/ProviderResult';
+export type { default as UserProviderResult } from './src/DTO/Contexts/UserProviderResult';
+export type { default as UrlProviderResult } from './src/DTO/Contexts/UrlProviderResult';
+export type { default as BusinessResult } from './src/DTO/Business/BusinessResult';
+export type { default as StringResult } from './src/DTO/Services/StringResult';
+export type { default as NumberResult } from './src/DTO/Services/NumberResult';
+export type { default as ApiResponse } from './src/DTO/Services/ApiResponse';
+export type { default as StatusRequest } from './src/DTO/Services/StatusRequest';
+export type { default as UserResult } from './src/DTO/Services/UserResult';
+export type { default as UserTokenResult } from './src/DTO/Services/UserTokenResult';
+export type { default as UserListResult } from './src/DTO/Services/UserListResult';
+export type { default as UserListPagedResult } from './src/DTO/Services/UserListPagedResult';
 
-export interface BusinessResult<T> {
-  sucesso: boolean;
-  mensagem?: string;
-  dataResult?: T;
-}
-
-class AuthBusinessClass {
-  private session: AuthSession | null = null;
-  getSession(): AuthSession | null {
-    return this.session;
-  }
-  setSession(session: AuthSession | null) {
-    this.session = session;
-  }
-}
-
-export const AuthFactory = {
-  AuthBusiness: new AuthBusinessClass(),
-};
-
-
-export interface StatusRequest {
-  sucesso: boolean;
-  mensagem?: string;
-}
-
-export interface IHttpClient {
-  doGetAuth<T>(url: string, token: string): Promise<T>;
-  doPostAuth<T>(url: string, data: any, token: string): Promise<T>;
-  doPutAuth<T>(url: string, data: any, token: string): Promise<T>;
-}
-
-
-export interface HttpClientInstance extends IHttpClient {
-  init(url: string): void;
-  setLogoff(cb: () => void): void;
-}
-
-export function HttpClient(): HttpClientInstance {
-  let base = '';
-  let logoff: () => void = () => {};
-  return {
-    init(url: string) { base = url; },
-    setLogoff(cb: () => void) { logoff = cb; },
-    async doGetAuth<T>(url: string, token: string) {
-      const res = await fetch(base + url, { headers: { Authorization: `Bearer ${token}` } });
-      if (res.status === 401) logoff();
-      return res.json() as Promise<T>;
-    },
-    async doPostAuth<T>(url: string, data: any, token: string) {
-      const res = await fetch(base + url, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(data) });
-      if (res.status === 401) logoff();
-      return res.json() as Promise<T>;
-    },
-    async doPutAuth<T>(url: string, data: any, token: string) {
-      const res = await fetch(base + url, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(data) });
-      if (res.status === 401) logoff();
-      return res.json() as Promise<T>;
-    },
-  };
-}
+export { default as ScrollToTop } from './src/Components/ScrollToTop';
+export { showFrequencyMin, showFrequencyMax, formatPhoneNumber } from './src/Components/Functions';
+export type { StringDictionary } from './src/Components/StringDictionary';
