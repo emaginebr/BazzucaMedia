@@ -1,7 +1,6 @@
-﻿using System;
-using Core.Domain;
-using BazzucaMedia.Domain.Impl.Core;
+﻿using BazzucaMedia.Domain.Impl.Core;
 using BazzucaMedia.Domain.Interfaces.Core;
+using Core.Domain;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DB.Infra

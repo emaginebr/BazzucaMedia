@@ -34,28 +34,28 @@ export default function Header(props: HeaderProps) {
                   Go to Dashboard
                 </Button>
               </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary" className="flex items-center space-x-2 text-black">
-                  <User className="h-5 w-5" />
-                  <span>{props.sessionInfo?.name}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate('/change-password')}>
-                  <LockIcon className="h-4 w-4 mr-2" />
-                  Change Password
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => {
-                  e.preventDefault();
-                  props.logout();
-                }}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="secondary" className="flex items-center space-x-2 text-black">
+                    <User className="h-5 w-5" />
+                    <span>{props.sessionInfo?.name}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate('/change-password')}>
+                    <LockIcon className="h-4 w-4 mr-2" />
+                    Change Password
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={(e) => {
+                    e.preventDefault();
+                    props.logout();
+                  }}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>

@@ -1,21 +1,16 @@
 ﻿using BazzucaMedia.Domain.Interfaces.Services;
 using BazzucaMedia.DTO.Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using NAuth.Client;
 using System;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BazzucaMedia.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ImageController: ControllerBase
+    public class ImageController : ControllerBase
     {
         private readonly IUserClient _userClient;
         private readonly IS3Service _imageService;
@@ -23,7 +18,8 @@ namespace BazzucaMedia.API.Controllers
         public ImageController(
             IUserClient userClient,
             IS3Service imageService
-        ) {
+        )
+        {
             _userClient = userClient;
             _imageService = imageService;
         }

@@ -1,6 +1,7 @@
 using BazzucaMedia.Domain.Interfaces.Factory;
 using BazzucaMedia.Domain.Interfaces.Models;
 using BazzucaMedia.DTO.Post;
+using BazzucaMedia.DTO.SocialNetwork;
 using Core.Domain;
 using Core.Domain.Repository;
 using System;
@@ -53,20 +54,29 @@ namespace BazzucaMedia.Domain.Impl.Models
         public IPostModel GetById(long postId, IPostDomainFactory factory)
             => _repository.GetById(postId, factory);
 
+        public IPostModel GetByScheduleDate(long userId, DateTime scheduleDate, IPostDomainFactory factory)
+        {
+            return _repository.GetByScheduleDate(userId, scheduleDate, factory);
+        }
+
         public IPostModel Insert(IPostDomainFactory factory)
             => _repository.Insert(this, factory);
 
         public IPostModel Update(IPostDomainFactory factory)
             => _repository.Update(this, factory);
 
-        public IEnumerable<IPostModel> Search(long userId, long? clientId, PostStatusEnum? status, int pageNum, out int pageCount, IPostDomainFactory factory)
+        public IEnumerable<IPostModel> Search(
+            long userId, long? clientId, SocialNetworkEnum? network, PostStatusEnum? status,
+            int pageNum, out int pageCount, IPostDomainFactory factory
+        )
         {
             return _repository.Search(
-                userId, 
-                clientId, 
-                status.HasValue ? (int) status : null, 
-                pageNum, 
-                out pageCount, 
+                userId,
+                clientId,
+                network.HasValue ? (int)network.Value : null,
+                status.HasValue ? (int)status.Value : null,
+                pageNum,
+                out pageCount,
                 factory
             );
         }

@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace BazzucaMedia.Domain.Impl.Core
 {

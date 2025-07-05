@@ -1,9 +1,6 @@
-﻿using System;
+﻿using BazzucaMedia.DTO.SocialNetwork;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BazzucaMedia.DTO.Client
 {
@@ -16,6 +13,6 @@ namespace BazzucaMedia.DTO.Client
         [JsonPropertyName("name")]
         public string Name { get; set; }
         [JsonPropertyName("socialNetworks")]
-        public string SocialNetworks { get; set; }
+        public IList<SocialNetworkEnum> SocialNetworks { get; set; }
     }
 }

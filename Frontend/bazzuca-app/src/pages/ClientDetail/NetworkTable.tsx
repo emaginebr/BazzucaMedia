@@ -1,4 +1,5 @@
-import { getNetworkIcon, getNetworkName } from "@/components/functions";
+import { getNetworkBadge, getNetworkIcon, getNetworkName } from "@/components/functions";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -69,8 +70,10 @@ export default function NetworkTable(props: INetworkProps) {
                         <TableRow key={network.networkId} className="cursor-pointer hover:bg-muted/50">
                             <TableCell>
                                 <div className="flex items-center space-x-2 text-muted-foreground">
-                                    {getNetworkIcon(network.network)}
-                                    <span>{getNetworkName(network.network)}</span>
+                                    <Badge
+                                        variant="secondary"
+                                        className={getNetworkBadge(network.network)}
+                                    >{getNetworkName(network.network)}</Badge>
                                 </div>
                             </TableCell>
                             <TableCell>

@@ -1,3 +1,5 @@
+import { getNetworkBadge, getNetworkName } from "@/components/functions";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -70,7 +72,12 @@ export default function ClientTable(props: IClientProps) {
                             </TableCell>
                             <TableCell className="text-muted-foreground">
                                 <Link to={`/clients/${client.clientId}`}>
-                                    <span>{client.socialNetworks}</span>
+                                    <span>{client.socialNetworks.map((network) => (
+                                        <Badge
+                                            variant="secondary"
+                                            className={getNetworkBadge(network) + " mr-1"}
+                                        >{getNetworkName(network)}</Badge>
+                                    ))}</span>
                                 </Link>
                             </TableCell>
                             <TableCell className="text-end">

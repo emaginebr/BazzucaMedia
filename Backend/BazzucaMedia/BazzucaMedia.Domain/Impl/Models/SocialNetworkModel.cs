@@ -37,7 +37,7 @@ namespace BazzucaMedia.Domain.Impl.Models
         public ISocialNetworkModel Update(ISocialNetworkDomainFactory factory)
             => _repository.Update(this, factory);
 
-        public void Delete(long networkId) 
+        public void Delete(long networkId)
             => _repository.Delete(networkId);
     }
 }

@@ -94,6 +94,30 @@ namespace BazzucaMedia.Domain.Impl.Services
             };
         }
 
+        private DateTime RoundToNearest30Minutes(DateTime input)
+        {
+            var totalMinutes = input.TimeOfDay.TotalMinutes;
+            var roundedMinutes = Math.Floor(totalMinutes / 30.0) * 30;
+
+            return input.Date.AddMinutes(roundedMinutes);
+        }
+
+        private void ValidateScheduleDate(IPostModel post)
+        {
+            var scheduleDate = DateTime.SpecifyKind(post.ScheduleDate, DateTimeKind.Unspecified);
+            scheduleDate = RoundToNearest30Minutes(scheduleDate);
+
+            var client = _clientFactory.BuildClientModel().GetById(post.ClientId, _clientFactory);
+
+            var modelTime = post.GetByScheduleDate(client.UserId, scheduleDate, _postFactory);
+            while (modelTime != null)
+            {
+                scheduleDate = scheduleDate.AddMinutes(30);
+                modelTime = post.GetByScheduleDate(client.UserId, scheduleDate, _postFactory);
+            }
+            post.ScheduleDate = scheduleDate;
+        }
+
         public IPostModel Insert(PostInfo post)
         {
             if (post == null)
@@ -102,17 +126,17 @@ namespace BazzucaMedia.Domain.Impl.Services
             }
             var model = _postFactory.BuildPostModel();
 
-            var scheduleDate = DateTime.SpecifyKind(post.ScheduleDate, DateTimeKind.Unspecified);
-
             model.PostId = post.PostId;
             model.ClientId = post.ClientId;
             model.NetworkId = post.NetworkId;
             model.PostType = post.PostType;
             model.MediaUrl = post.MediaUrl;
-            model.ScheduleDate = scheduleDate;
+            model.ScheduleDate = post.ScheduleDate;
             model.Title = post.Title;
             model.Description = post.Description;
             model.Status = post.Status;
+
+            ValidateScheduleDate(model);
 
             return model.Insert(_postFactory);
         }
@@ -125,16 +149,16 @@ namespace BazzucaMedia.Domain.Impl.Services
             }
             var model = _postFactory.BuildPostModel().GetById(post.PostId, _postFactory);
 
-            var scheduleDate = DateTime.SpecifyKind(post.ScheduleDate, DateTimeKind.Unspecified);
-
             model.ClientId = post.ClientId;
             model.NetworkId = post.NetworkId;
             model.PostType = post.PostType;
             model.MediaUrl = post.MediaUrl;
-            model.ScheduleDate = scheduleDate;
+            model.ScheduleDate = post.ScheduleDate;
             model.Title = post.Title;
             model.Description = post.Description;
             model.Status = post.Status;
+
+            ValidateScheduleDate(model);
 
             return model.Update(_postFactory);
         }
@@ -147,9 +171,10 @@ namespace BazzucaMedia.Domain.Impl.Services
             var posts = model.Search(
                 param.UserId,
                 param.ClientId,
+                param.Network,
                 param.Status,
                 param.PageNum,
-                out pageCount, 
+                out pageCount,
                 _postFactory
              )
              .Select(x => GetPostInfo(x))
@@ -169,7 +194,8 @@ namespace BazzucaMedia.Domain.Impl.Services
             switch (socialNetwork)
             {
                 case SocialNetworkEnum.X:
-                    publisherService = new TwitterService(_s3Service);
+                    //publisherService = new TwitterService(_s3Service);
+                    publisherService = new XService(_s3Service);
                     break;
                 default:
                     throw new Exception("Publisher not found");

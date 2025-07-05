@@ -1,5 +1,4 @@
-﻿using System;
-namespace BazzucaMedia.API.DTO
+﻿namespace BazzucaMedia.API.DTO
 {
     public class AddRemoveItemParam
     {

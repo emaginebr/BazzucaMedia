@@ -1,5 +1,4 @@
-﻿using System;
-using BazzucaMedia.Domain.Interfaces.Core;
+﻿using BazzucaMedia.Domain.Interfaces.Core;
 using Microsoft.Extensions.Logging;
 
 namespace BazzucaMedia.Domain.Impl.Core
@@ -17,30 +16,30 @@ namespace BazzucaMedia.Domain.Impl.Core
         {
             //if (System.Diagnostics.Debugger.IsAttached)
             //{
-                switch (level)
-                {
-                    case Levels.Trace:
-                        _logger.LogTrace(message);
-                        break;
-                    case Levels.Debug:
-                        _logger.LogDebug(message);
-                        break;
-                    case Levels.Information:
-                        _logger.LogInformation(message);
-                        break;
-                    case Levels.Warning:
-                        _logger.LogWarning(message);
-                        break;
-                    case Levels.Error:
-                        _logger.LogError(message);
-                        break;
-                    case Levels.Critical:
-                        _logger.LogCritical(message);
-                        break;
-                    default:
-                        _logger.LogTrace(message);
-                        break;
-                }
+            switch (level)
+            {
+                case Levels.Trace:
+                    _logger.LogTrace(message);
+                    break;
+                case Levels.Debug:
+                    _logger.LogDebug(message);
+                    break;
+                case Levels.Information:
+                    _logger.LogInformation(message);
+                    break;
+                case Levels.Warning:
+                    _logger.LogWarning(message);
+                    break;
+                case Levels.Error:
+                    _logger.LogError(message);
+                    break;
+                case Levels.Critical:
+                    _logger.LogCritical(message);
+                    break;
+                default:
+                    _logger.LogTrace(message);
+                    break;
+            }
             //}
         }
     }

@@ -1,8 +1,8 @@
-using Core.Domain;
-using Core.Domain.Repository;
 using BazzucaMedia.Domain.Interfaces.Factory;
 using BazzucaMedia.Domain.Interfaces.Models;
-using System;
+using BazzucaMedia.DTO.SocialNetwork;
+using Core.Domain;
+using Core.Domain.Repository;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,16 +23,16 @@ namespace BazzucaMedia.Domain.Impl.Models
         public long UserId { get; set; }
         public string Name { get; set; }
 
-        public string GetSocialNetworks(ISocialNetworkDomainFactory factory)
+        public IList<SocialNetworkEnum> GetSocialNetworks(ISocialNetworkDomainFactory factory)
         {
             if (!(ClientId > 0))
             {
-                return string.Empty;
+                return new List<SocialNetworkEnum>();
             }
-            var networks = factory.BuildSocialNetworkModel()
+            return factory.BuildSocialNetworkModel()
                 .ListByClient(ClientId, factory)
-                .Select(x => x.Network.ToString());
-            return string.Join(", ", networks);
+                .Select(x => x.Network)
+                .ToList();
         }
 
         public IEnumerable<IClientModel> ListByUser(long userId, IClientDomainFactory factory)
@@ -47,7 +47,7 @@ namespace BazzucaMedia.Domain.Impl.Models
         public IClientModel Update(IClientDomainFactory factory)
             => _repository.Update(this, factory);
 
-        public void Delete(long clientId) 
+        public void Delete(long clientId)
             => _repository.Delete(clientId);
     }
 }

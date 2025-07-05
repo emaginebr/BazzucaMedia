@@ -1,11 +1,11 @@
-using Core.Domain;
 using BazzucaMedia.Domain.Interfaces.Factory;
 using BazzucaMedia.Domain.Interfaces.Models;
 using BazzucaMedia.Domain.Interfaces.Services;
+using BazzucaMedia.DTO.SocialNetwork;
+using Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BazzucaMedia.DTO.SocialNetwork;
 
 namespace BazzucaMedia.Domain.Impl.Services
 {
@@ -39,7 +39,8 @@ namespace BazzucaMedia.Domain.Impl.Services
             {
                 return null;
             }
-            return new SocialNetworkInfo { 
+            return new SocialNetworkInfo
+            {
                 NetworkId = model.NetworkId,
                 Network = model.Network,
                 ClientId = model.ClientId,

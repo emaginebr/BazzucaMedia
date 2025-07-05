@@ -1,10 +1,10 @@
 ﻿using BazzucaMedia.Application;
-using NoChainSwapBackgroundService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NoChainSwapBackgroundService;
 
 namespace BazzucaMedia.BackgroundService
 {
@@ -28,13 +28,13 @@ namespace BazzucaMedia.BackgroundService
             services.AddHostedService<Service>();
             //services.AddHostedService<ServiceDaily>();
             services.AddTransient(typeof(ScheduleTask), typeof(ScheduleTask));
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
+
         }
     }
 }

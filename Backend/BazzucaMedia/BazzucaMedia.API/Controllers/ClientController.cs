@@ -1,22 +1,17 @@
-﻿using BazzucaMedia.Domain.Impl.Services;
-using BazzucaMedia.Domain.Interfaces.Services;
+﻿using BazzucaMedia.Domain.Interfaces.Services;
 using BazzucaMedia.DTO.Client;
 using BazzucaMedia.DTO.Domain;
-using BazzucaMedia.DTO.Post;
-using BazzucaMedia.DTO.SocialNetwork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NAuth.Client;
-using NAuth.DTO.User;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace BazzucaMedia.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ClientController: ControllerBase
+    public class ClientController : ControllerBase
     {
         private readonly IUserClient _userClient;
         private readonly IClientService _clientService;

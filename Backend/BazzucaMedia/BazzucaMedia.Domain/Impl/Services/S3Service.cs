@@ -1,16 +1,9 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Transfer;
 using BazzucaMedia.Domain.Interfaces.Services;
-using Core.Domain;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace BazzucaMedia.Domain.Impl.Services
 {

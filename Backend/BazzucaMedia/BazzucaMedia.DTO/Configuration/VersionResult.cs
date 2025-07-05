@@ -1,6 +1,5 @@
-﻿using System;
+﻿using BazzucaMedia.DTO.Domain;
 using System.Text.Json.Serialization;
-using BazzucaMedia.DTO.Domain;
 
 namespace BazzucaMedia.DTO.Configuration
 {

@@ -4,21 +4,13 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mime;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace BazzucaMedia.API
 {
@@ -43,9 +35,10 @@ namespace BazzucaMedia.API
             services.AddHealthChecks();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { 
-                    Title = "BazzucaMedia.API", 
-                    Version = "v1" 
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "BazzucaMedia.API",
+                    Version = "v1"
                 });
             });
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
@@ -74,7 +67,8 @@ namespace BazzucaMedia.API
                 {
                     c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0;
                 });
-                app.UseSwaggerUI(c => {
+                app.UseSwaggerUI(c =>
+                {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "BazzucaMedia.API v1");
                     //c.RoutePrefix = string.Empty;
                 });

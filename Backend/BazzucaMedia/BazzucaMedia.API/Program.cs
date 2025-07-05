@@ -1,18 +1,5 @@
-using Castle.Core.Resource;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Resources;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace BazzucaMedia.API
 {
@@ -27,7 +14,7 @@ namespace BazzucaMedia.API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    #if !DEBUG
+#if !DEBUG
                     webBuilder.UseKestrel(options =>
                     {
                         options.ConfigureHttpsDefaults(httpsOptions =>
@@ -40,7 +27,7 @@ namespace BazzucaMedia.API
                             }
                         });
                     });
-                    #endif
+#endif
                     webBuilder.UseStartup<Startup>();
                 });
     }

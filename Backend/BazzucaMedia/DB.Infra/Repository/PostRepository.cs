@@ -5,7 +5,6 @@ using Core.Domain.Repository;
 using DB.Infra.Context;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
 using System.Linq;
 
 namespace DB.Infra.Repository
@@ -28,7 +27,7 @@ namespace DB.Infra.Repository
             model.NetworkId = row.NetworkId;
             model.ClientId = row.ClientId;
             model.ScheduleDate = row.ScheduleDate;
-            model.PostType = (PostTypeEnum) row.PostType;
+            model.PostType = (PostTypeEnum)row.PostType;
             model.MediaUrl = row.S3Key;
             model.Title = row.Title;
             model.Status = (PostStatusEnum)row.Status;
@@ -42,7 +41,7 @@ namespace DB.Infra.Repository
             row.NetworkId = model.NetworkId;
             row.ClientId = model.ClientId;
             row.ScheduleDate = model.ScheduleDate;
-            row.PostType = (int) model.PostType;
+            row.PostType = (int)model.PostType;
             row.S3Key = model.MediaUrl;
             row.Title = model.Title;
             row.Status = (int)model.Status;
@@ -54,7 +53,7 @@ namespace DB.Infra.Repository
             var rows = _context.Posts
                 .Where(
                     x => x.Client.UserId == userId
-                    && x.ScheduleDate >= ini 
+                    && x.ScheduleDate >= ini
                     && x.ScheduleDate <= end
                 )
                 .OrderBy(x => x.ScheduleDate)
@@ -65,6 +64,16 @@ namespace DB.Infra.Repository
         public IPostModel GetById(long postId, IPostDomainFactory factory)
         {
             var row = _context.Posts.Find(postId);
+            return row == null ? null : DbToModel(factory, row);
+        }
+
+        public IPostModel GetByScheduleDate(long userId, DateTime scheduleDate, IPostDomainFactory factory)
+        {
+            var row = _context.Posts
+                .Where(
+                    x => x.Client.UserId == userId
+                    && x.ScheduleDate == scheduleDate
+                ).FirstOrDefault();
             return row == null ? null : DbToModel(factory, row);
         }
 
@@ -87,18 +96,22 @@ namespace DB.Infra.Repository
             return model;
         }
 
-        public IEnumerable<IPostModel> Search(long userId, long? clientId, int? status, int pageNum, out int pageCount, IPostDomainFactory factory)
+        public IEnumerable<IPostModel> Search(long userId, long? clientId, int? network, int? status, int pageNum, out int pageCount, IPostDomainFactory factory)
         {
             var currentDate = DateTime.Now;
 
             var q = _context.Posts.Where(
-                x => x.Client.UserId == userId 
+                x => x.Client.UserId == userId
                 && x.ScheduleDate >= currentDate.AddMonths(-2)
                 && x.ScheduleDate <= currentDate.AddMonths(2)
             );
             if (clientId.HasValue && clientId.Value > 0)
             {
                 q = q.Where(x => x.ClientId == clientId.Value);
+            }
+            if (network.HasValue && network.Value > 0)
+            {
+                q = q.Where(x => x.Network.NetworkKey == network.Value);
             }
             if (status.HasValue && status.Value > 0)
             {

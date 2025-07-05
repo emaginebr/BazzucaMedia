@@ -1,10 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
-using BazzucaMedia.BackgroundService;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using NCrontab;
 
 namespace NoChainSwapBackgroundService
 {

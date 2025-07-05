@@ -31,45 +31,46 @@ export default function Post() {
   const networkContext = useContext<ISocialNetworkProvider>(SocialNetworkContext);
   const postContext = useContext<IPostProvider>(PostContext);
 
-
-  useEffect(() => {
+  const loadPost = async () => {
     setLoading(true);
-    authContext.loadUserSession().then(async (ret) => {
-      if (!authContext.sessionInfo) {
+    if (!authContext.sessionInfo) {
+      setLoading(false);
+      navigate("/login");
+      return;
+    }
+    let post: PostInfo = {
+      postId: parseInt(postId || "0"),
+      networkId: 0,
+      clientId: 0,
+      title: "",
+      description: "",
+      mediaUrl: "",
+      scheduleDate: new Date().toISOString(),
+      postType: PostTypeEnum.Post,
+      status: PostStatusEnum.Draft
+    };
+    postContext.setPost(post);
+    postContext.setImageUrl("");
+    let postIdNum: number = parseInt(postId || "0");
+    if (postIdNum > 0) {
+      let retPost = await postContext.getById(postIdNum);
+      if (!retPost.sucesso) {
+        toast.error(retPost.mensagemErro);
         setLoading(false);
-        navigate("/login");
         return;
       }
-      let post: PostInfo = {
-        postId: parseInt(postId || "0"),
-        networkId: 0,
-        clientId: 0,
-        title: "",
-        description: "",
-        mediaUrl: "",
-        scheduleDate: new Date().toDateString(),
-        postType: PostTypeEnum.Post,
-        status: PostStatusEnum.Draft
-      };
-      postContext.setPost(post);
-      postContext.setImageUrl("");
-      let postIdNum: number = parseInt(postId || "0");
-      if (postIdNum > 0) {
-        let retPost = await postContext.getById(postIdNum);
-        if (!retPost.sucesso) {
-          toast.error(retPost.mensagemErro);
-          setLoading(false);
-          return;
-        }
-        let ret = await networkContext.listByClient(retPost.post.clientId);
-        if (!ret.sucesso) {
-          toast.error(ret.mensagemErro);
-          setLoading(false);
-          return;
-        }
+      let ret = await networkContext.listByClient(retPost.post.clientId);
+      if (!ret.sucesso) {
+        toast.error(ret.mensagemErro);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-    })
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadPost();
   }, []);
 
   return (

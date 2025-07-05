@@ -20,6 +20,7 @@ import PostInfo from "@/DTO/Domain/PostInfo";
 import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
+import { ShortLink } from "@/components/ShortLink";
 
 interface IPostProps {
   insertMode: boolean;
@@ -245,6 +246,10 @@ export function PostForm(props: IPostProps) {
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   {postContext.imageUrl ? (
                     <>
+                      <p className="text-xs text-white mt-2 truncate">
+                        <ShortLink url={postContext.imageUrl} />
+                      </p>
+                      <p className="text-xs text-gray-400">Click to change</p>
                       {isImage(postContext.imageUrl) ? (
                         <img
                           src={postContext.imageUrl}
@@ -260,10 +265,6 @@ export function PostForm(props: IPostProps) {
                       ) : (
                         <ImageIcon className="w-8 h-8 mb-2 text-brand-blue" />
                       )}
-                      <p className="text-xs text-white mt-2 truncate">
-                        {postContext.imageUrl}
-                      </p>
-                      <p className="text-xs text-gray-400">Click to change</p>
                     </>
                   ) : (
                     <>

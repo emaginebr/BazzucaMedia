@@ -1,22 +1,20 @@
-﻿using Core.Domain;
-using Core.Domain.Cloud;
-using Core.Domain.Repository;
-using DB.Infra;
-using DB.Infra.Context;
-using DB.Infra.Repository;
-using BazzucaMedia.Domain.Impl.Core;
+﻿using BazzucaMedia.Domain.Impl.Core;
 using BazzucaMedia.Domain.Impl.Factory;
 using BazzucaMedia.Domain.Impl.Services;
 using BazzucaMedia.Domain.Interfaces.Core;
 using BazzucaMedia.Domain.Interfaces.Factory;
 using BazzucaMedia.Domain.Interfaces.Models;
 using BazzucaMedia.Domain.Interfaces.Services;
+using Core.Domain;
+using Core.Domain.Repository;
+using DB.Infra;
+using DB.Infra.Context;
+using DB.Infra.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using BazzucaMedia.Domain;
 using NAuth.Client;
+using System;
 
 namespace BazzucaMedia.Application
 {
@@ -25,7 +23,7 @@ namespace BazzucaMedia.Application
 
         private static void injectDependency(Type serviceType, Type implementationType, IServiceCollection services, bool scoped = true)
         {
-            if(scoped)
+            if (scoped)
                 services.AddScoped(serviceType, implementationType);
             else
                 services.AddTransient(serviceType, implementationType);

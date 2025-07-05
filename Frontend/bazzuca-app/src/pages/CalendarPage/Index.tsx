@@ -116,7 +116,11 @@ export default function CalendarPage() {
 
     const handleEventDrop = async ({ event, start }: any) => {
         const post = event.resource as PostInfo;
-        const updatedPost = { ...post, scheduleDate: start.toISOString() };
+        const localDate = new Date(start); // Date from picker
+        const utcDate = new Date(
+            localDate.getTime() - localDate.getTimezoneOffset() * 60000
+        );
+        const updatedPost = { ...post, scheduleDate: utcDate.toISOString() };
 
         const result = await postContext.update(updatedPost);
 

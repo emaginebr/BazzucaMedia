@@ -1,8 +1,8 @@
-using Core.Domain;
-using Core.Domain.Repository;
 using BazzucaMedia.Domain.Impl.Models;
 using BazzucaMedia.Domain.Interfaces.Factory;
 using BazzucaMedia.Domain.Interfaces.Models;
+using Core.Domain;
+using Core.Domain.Repository;
 
 namespace BazzucaMedia.Domain.Impl.Factory
 {

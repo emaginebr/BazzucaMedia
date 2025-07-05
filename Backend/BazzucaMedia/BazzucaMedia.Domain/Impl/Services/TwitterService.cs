@@ -1,13 +1,11 @@
 ﻿using BazzucaMedia.Domain.Interfaces.Models;
 using BazzucaMedia.Domain.Interfaces.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Tweetinvi;
-using Tweetinvi.Parameters;
 
 namespace BazzucaMedia.Domain.Impl.Services
 {
@@ -23,7 +21,8 @@ namespace BazzucaMedia.Domain.Impl.Services
 
         private readonly IS3Service _s3Service;
 
-        public TwitterService(IS3Service imageService) {
+        public TwitterService(IS3Service imageService)
+        {
             _s3Service = imageService;
         }
 
@@ -36,11 +35,39 @@ namespace BazzucaMedia.Domain.Impl.Services
 
             var media = await userClient.Upload.UploadMessageVideoAsync(fileBuffer);
 
+            /*
             await userClient.Tweets.PublishTweetAsync(new PublishTweetParameters(post.Description)
             {
                 Medias = { media }
             });
+            */
 
+            var json = JsonSerializer.Serialize(new
+            {
+                text = post.Description,
+                media = new { media_ids = new[] { media.Id.ToString() } }
+            });
+
+            // Fix: Convert the JSON string to StringContent, which implements HttpContent
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await userClient.Execute.AdvanceRequestAsync(request =>
+            {
+                request.Query.Url = "https://api.x.com/2/tweets";
+                request.Query.HttpMethod = Tweetinvi.Models.HttpMethod.POST;
+                request.Query.HttpContent = httpContent; // Corrected to use HttpContent
+                /*
+                request.Query.CustomHeaders = new CustomRequestHeaders
+                {
+                        { "Content-Type", "application/json" } // Correctly set the Content-Type header
+                };
+                */
+            });
+
+            if (!response.Response.IsSuccessStatusCode)
+            {
+                throw new Exception("X error: " + response.Response.Content);
+            }
         }
     }
 }

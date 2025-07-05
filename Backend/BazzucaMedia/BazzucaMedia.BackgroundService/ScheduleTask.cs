@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using BazzucaMedia.Domain.Interfaces.Services;
-
-namespace BazzucaMedia.BackgroundService
+﻿namespace BazzucaMedia.BackgroundService
 {
     public class ScheduleTask
     {

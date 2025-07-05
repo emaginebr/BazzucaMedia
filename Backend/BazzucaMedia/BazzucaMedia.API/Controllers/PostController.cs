@@ -1,14 +1,9 @@
-﻿using BazzucaMedia.Domain.Impl.Services;
-using BazzucaMedia.Domain.Interfaces.Services;
-using BazzucaMedia.DTO.Domain;
+﻿using BazzucaMedia.Domain.Interfaces.Services;
 using BazzucaMedia.DTO.Post;
-using BazzucaMedia.DTO.SocialNetwork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NAuth.Client;
-using NAuth.DTO.User;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +11,7 @@ namespace BazzucaMedia.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class PostController: ControllerBase
+    public class PostController : ControllerBase
     {
         private readonly IUserClient _userClient;
         private readonly IPostService _postService;

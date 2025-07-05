@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BazzucaMedia.Domain.Impl.Core;
+using BazzucaMedia.Domain.Interfaces.Core;
 using Core.Domain;
 using DB.Infra.Context;
-using BazzucaMedia.Domain.Impl.Core;
-using BazzucaMedia.Domain.Interfaces.Core;
+using System;
 
 namespace DB.Infra
 {
@@ -25,7 +25,7 @@ namespace DB.Infra
                 _log.Log("Iniciando bloco de transação.", Levels.Trace);
                 return new TransactionDisposable(_log, _ccsContext.Database.BeginTransaction());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }

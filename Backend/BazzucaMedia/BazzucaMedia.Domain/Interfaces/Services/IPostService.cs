@@ -1,7 +1,5 @@
 using BazzucaMedia.Domain.Interfaces.Models;
 using BazzucaMedia.DTO.Post;
-using BazzucaMedia.DTO.SocialNetwork;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,6 +1,4 @@
-﻿using System;
-using BazzucaMedia.Domain.Impl.Core;
-using Microsoft.Extensions.Logging;
+﻿using BazzucaMedia.Domain.Impl.Core;
 
 namespace BazzucaMedia.Domain.Interfaces.Core
 {

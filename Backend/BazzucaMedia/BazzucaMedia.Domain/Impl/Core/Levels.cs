@@ -1,5 +1,4 @@
-﻿using System;
-namespace BazzucaMedia.Domain.Impl.Core
+﻿namespace BazzucaMedia.Domain.Impl.Core
 {
     public enum Levels
     {

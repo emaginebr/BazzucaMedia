@@ -1,6 +1,4 @@
-﻿using BazzucaMedia.Domain.Impl.Models;
-using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace BazzucaMedia.API.DTO
 {

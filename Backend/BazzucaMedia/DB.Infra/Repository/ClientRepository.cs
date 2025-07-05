@@ -1,7 +1,7 @@
-using Core.Domain.Repository;
-using DB.Infra.Context;
 using BazzucaMedia.Domain.Interfaces.Factory;
 using BazzucaMedia.Domain.Interfaces.Models;
+using Core.Domain.Repository;
+using DB.Infra.Context;
 using System.Collections.Generic;
 using System.Linq;
 

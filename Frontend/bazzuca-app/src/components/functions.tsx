@@ -42,7 +42,7 @@ function getNetworkBadge(network: SocialNetworkEnum): string {
 function getNetworkName(network: SocialNetworkEnum): string {
     switch (network) {
         case SocialNetworkEnum.X:
-            return 'X';
+            return 'X.com';
         case SocialNetworkEnum.Facebook:
             return 'Facebook';
         case SocialNetworkEnum.Instagram:
@@ -80,19 +80,19 @@ function getNetworkColor(network: SocialNetworkEnum): string {
 function getNetworkIcon(network: SocialNetworkEnum): React.JSX.Element {
     switch (network) {
         case SocialNetworkEnum.X:
-            return <X className="h-4 w-4" />;
+            return <X className="h-4 w-4 mr-1" />;
         case SocialNetworkEnum.Facebook:
-            return <Facebook className="h-4 w-4" />;
+            return <Facebook className="h-4 w-4 mr-1" />;
         case SocialNetworkEnum.Instagram:
-            return <Instagram className="h-4 w-4" />;
+            return <Instagram className="h-4 w-4 mr-1" />;
         case SocialNetworkEnum.LinkedIn:
-            return <Linkedin className="h-4 w-4" />;
+            return <Linkedin className="h-4 w-4 mr-1" />;
         case SocialNetworkEnum.TikTok:
-            return <Network className="h-4 w-4" />;
+            return <Network className="h-4 w-4 mr-1" />;
         case SocialNetworkEnum.YouTube:
-            return <Youtube className="h-4 w-4" />;
+            return <Youtube className="h-4 w-4 mr-1" />;
         default:
-            return <MinusCircle className="h-4 w-4" />;
+            return <MinusCircle className="h-4 w-4 mr-1" />;
     }
 }
 
