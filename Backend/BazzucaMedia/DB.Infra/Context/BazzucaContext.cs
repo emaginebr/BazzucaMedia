@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace DB.Infra.Context;
 
@@ -20,13 +22,8 @@ public partial class BazzucaContext : DbContext
     public virtual DbSet<SocialNetwork> SocialNetworks { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-#if DEBUG
-        optionsBuilder.UseNpgsql("Host=emagine-db-do-user-4436480-0.e.db.ondigitalocean.com;Port=25060;Database=bazzucasocial;Username=doadmin;Password=AVNS_akcvzXVnMkvNKaO10-O");
-#else
-        optionsBuilder.UseNpgsql("Host=private-emagine-db-do-user-4436480-0.e.db.ondigitalocean.com;Port=25060;Database=bazzucasocial;Username=doadmin;Password=AVNS_akcvzXVnMkvNKaO10-O");
-#endif
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Host=emagine-db-do-user-4436480-0.e.db.ondigitalocean.com;Port=25060;Database=bazzucasocial;Username=doadmin;Password=AVNS_akcvzXVnMkvNKaO10-O");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -93,6 +90,12 @@ public partial class BazzucaContext : DbContext
             entity.ToTable("social_networks");
 
             entity.Property(e => e.NetworkId).HasColumnName("network_id");
+            entity.Property(e => e.AccessSecret)
+                .HasMaxLength(255)
+                .HasColumnName("access_secret");
+            entity.Property(e => e.AccessToken)
+                .HasMaxLength(255)
+                .HasColumnName("access_token");
             entity.Property(e => e.Active)
                 .HasDefaultValue(true)
                 .HasColumnName("active");

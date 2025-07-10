@@ -28,7 +28,7 @@ namespace BazzucaMedia.Domain.Impl.Services
             _s3Service = imageService;
         }
 
-        public async Task<string> UploadVideoAsync(byte[] videoBytes, string mediaType = "video/mp4")
+        public async Task<string> UploadVideoAsync(byte[] videoBytes, string oauthToken, string oauthSecret, string mediaType = "video/mp4")
         {
             // INIT
             var initContent = new MultipartFormDataContent
@@ -38,7 +38,14 @@ namespace BazzucaMedia.Domain.Impl.Services
                 { new StringContent("tweet_video"), "media_category" },
                 { new StringContent(videoBytes.Length.ToString()), "total_bytes" }
             };
-            _auth.SignRequest(_httpClient, HttpMethod.Post, API_UPLOAD_URL + "/initialize", initContent);
+            _auth.SignRequest(
+                _httpClient, 
+                HttpMethod.Post, 
+                API_UPLOAD_URL + "/initialize", 
+                initContent,
+                oauthToken,
+                oauthSecret
+            );
             var initRes = await _httpClient.PostAsync(API_UPLOAD_URL, initContent);
             initRes.EnsureSuccessStatusCode();
             var initObj = JsonDocument.Parse(await initRes.Content.ReadAsStringAsync());
@@ -59,7 +66,14 @@ namespace BazzucaMedia.Domain.Impl.Services
                     { new StringContent(segmentIndex.ToString()), "segment_index" },
                     { new ByteArrayContent(chunk), "media" }
                 };
-                _auth.SignRequest(_httpClient, HttpMethod.Post, API_UPLOAD_URL, appendContent);
+                _auth.SignRequest(
+                    _httpClient, 
+                    HttpMethod.Post, 
+                    API_UPLOAD_URL, 
+                    appendContent,
+                    oauthToken,
+                    oauthSecret
+                );
                 var appendRes = await _httpClient.PostAsync(API_UPLOAD_URL, appendContent);
                 appendRes.EnsureSuccessStatusCode();
                 segmentIndex++;
@@ -71,7 +85,14 @@ namespace BazzucaMedia.Domain.Impl.Services
                 { new StringContent("FINALIZE"), "command" },
                 { new StringContent(mediaId), "media_id" }
             };
-            _auth.SignRequest(_httpClient, HttpMethod.Post, API_UPLOAD_URL, finalizeContent);
+            _auth.SignRequest(
+                _httpClient, 
+                HttpMethod.Post, 
+                API_UPLOAD_URL, 
+                finalizeContent,
+                oauthToken,
+                oauthSecret
+            );
             var finalizeRes = await _httpClient.PostAsync(API_UPLOAD_URL, finalizeContent);
             finalizeRes.EnsureSuccessStatusCode();
 
@@ -80,7 +101,14 @@ namespace BazzucaMedia.Domain.Impl.Services
             {
                 await Task.Delay(2000);
                 var statusUrl = $"{API_UPLOAD_URL}?command=STATUS&media_id={mediaId}";
-                _auth.SignRequest(_httpClient, HttpMethod.Get, statusUrl, null);
+                _auth.SignRequest(
+                    _httpClient, 
+                    HttpMethod.Get, 
+                    statusUrl, 
+                    null,
+                    oauthToken,
+                    oauthSecret
+                );
                 var statusRes = await _httpClient.GetAsync(statusUrl);
                 var statusObj = JsonDocument.Parse(await statusRes.Content.ReadAsStringAsync());
 
@@ -102,7 +130,7 @@ namespace BazzucaMedia.Domain.Impl.Services
             return mediaId;
         }
 
-        public async Task<bool> CreatePostWithMediaAsync(string text, string mediaId)
+        public async Task<bool> CreatePostWithMediaAsync(string text, string mediaId, string oauthToken, string oauthSecret)
         {
             var payload = new
             {
@@ -113,7 +141,14 @@ namespace BazzucaMedia.Domain.Impl.Services
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            _auth.SignRequest(_httpClient, HttpMethod.Post, API_POST_URL, content);
+            _auth.SignRequest(
+                _httpClient, 
+                HttpMethod.Post, 
+                API_POST_URL, 
+                content,
+                oauthToken,
+                oauthSecret
+            );
             var response = await _httpClient.PostAsync(API_POST_URL, content);
 
             if (!response.IsSuccessStatusCode)
@@ -130,8 +165,8 @@ namespace BazzucaMedia.Domain.Impl.Services
         {
             var fileBuffer = await _s3Service.DownloadFile(post.MediaUrl);
 
-            var mediaId = await UploadVideoAsync(fileBuffer);
-            await CreatePostWithMediaAsync(post.Description, mediaId);
+            var mediaId = await UploadVideoAsync(fileBuffer, "", "");
+            await CreatePostWithMediaAsync(post.Description, mediaId, "", "");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DB.Infra.Context;
 
@@ -17,6 +18,10 @@ public partial class SocialNetwork
     public string Password { get; set; }
 
     public bool Active { get; set; }
+
+    public string AccessToken { get; set; }
+
+    public string AccessSecret { get; set; }
 
     public virtual Client Client { get; set; }
 
