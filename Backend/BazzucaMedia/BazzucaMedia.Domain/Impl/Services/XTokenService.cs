@@ -23,28 +23,36 @@ namespace BazzucaMedia.Domain.Impl.Services
 
         public async Task<OAuthTokenInfo> GetRequestTokenAsync()
         {
-            var url = "https://api.twitter.com/oauth/request_token?oauth_callback=oob&x_auth_access_type=write";
+            var url = "https://api.x.com/oauth/request_token?oauth_callback=oob&x_auth_access_type=write";
             var nonce = Guid.NewGuid().ToString("N");
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
 
             var parameters = new SortedDictionary<string, string>
-        {
-            {"oauth_callback", "oob"},
-            {"oauth_consumer_key", API_KEY},
-            {"oauth_nonce", nonce},
-            {"oauth_signature_method", "HMAC-SHA1"},
-            {"oauth_timestamp", timestamp},
-            {"oauth_version", "1.0"}
-        };
+            {
+                {"oauth_callback", "oob"},
+                {"oauth_consumer_key", API_KEY},
+                {"oauth_nonce", nonce},
+                {"oauth_signature_method", "HMAC-SHA1"},
+                {"oauth_timestamp", timestamp},
+                {"oauth_version", "1.0"}
+            };
 
             var paramString = string.Join("&", parameters.Select(p => $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value)}"));
-            var baseString = $"POST&{Uri.EscapeDataString("https://api.twitter.com/oauth/request_token")}&{Uri.EscapeDataString(paramString)}";
+            var baseString = $"POST&{Uri.EscapeDataString("https://api.x.com/oauth/request_token")}&{Uri.EscapeDataString(paramString)}";
             var signingKey = $"{Uri.EscapeDataString(API_SECRET)}&";
 
             using var hasher = new System.Security.Cryptography.HMACSHA1(Encoding.ASCII.GetBytes(signingKey));
             var signature = Convert.ToBase64String(hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString)));
 
-            var authHeader = $"OAuth oauth_callback=\"oob\", oauth_consumer_key=\"{API_KEY}\", oauth_nonce=\"{nonce}\", oauth_signature=\"{Uri.EscapeDataString(signature)}\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"{timestamp}\", oauth_version=\"1.0\"";
+            //var authHeader = $"OAuth oauth_callback=\"oob\", oauth_consumer_key=\"{API_KEY}\", oauth_nonce=\"{nonce}\", oauth_signature=\"{Uri.EscapeDataString(signature)}\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"{timestamp}\", oauth_version=\"1.0\"";
+            var authHeader = 
+                $"oauth_callback=\"oob\", " +
+                $"oauth_consumer_key=\"{API_KEY}\", " +
+                $"oauth_nonce=\"{nonce}\", " +
+                $"oauth_signature=\"{Uri.EscapeDataString(signature)}\", " +
+                $"oauth_signature_method=\"HMAC-SHA1\", " +
+                $"oauth_timestamp=\"{timestamp}\", " +
+                $"oauth_version=\"1.0\"";
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", authHeader);
             var response = await _httpClient.PostAsync(url, new StringContent(""));
