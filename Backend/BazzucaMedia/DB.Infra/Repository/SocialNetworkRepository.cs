@@ -26,6 +26,8 @@ namespace DB.Infra.Repository
             model.Url = row.Url;
             model.User = row.User;
             model.Password = row.Password;
+            model.AccessToken = row.AccessToken;
+            model.AccessSecret = row.AccessSecret;
             return model;
         }
 
@@ -37,6 +39,8 @@ namespace DB.Infra.Repository
             row.Url = model.Url;
             row.User = model.User;
             row.Password = model.Password;
+            row.AccessToken = model.AccessToken;
+            row.AccessSecret = model.AccessSecret;
         }
 
         public IEnumerable<ISocialNetworkModel> ListByClient(long clientId, ISocialNetworkDomainFactory factory)

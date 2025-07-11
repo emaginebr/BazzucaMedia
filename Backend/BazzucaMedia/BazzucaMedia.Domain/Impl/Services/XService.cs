@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BazzucaMedia.Domain.Impl.Services
 {
-    public class XService : IPublisherService
+    public class XService : IXService
     {
         //private readonly string _apiUrl = "https://upload.twitter.com/1.1/media/upload.json";
         private const string API_UPLOAD_URL = "https://api.x.com/2/media/upload";

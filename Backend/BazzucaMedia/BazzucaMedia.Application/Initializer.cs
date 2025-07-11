@@ -20,6 +20,7 @@ namespace BazzucaMedia.Application
 {
     public static class Initializer
     {
+        private static readonly string API_URL = "https://emagine.com.br/auth-api";
 
         private static void injectDependency(Type serviceType, Type implementationType, IServiceCollection services, bool scoped = true)
         {
@@ -48,12 +49,14 @@ namespace BazzucaMedia.Application
             #endregion
 
             #region Service
-            injectDependency(typeof(IUserClient), typeof(UserClient), services, scoped);
+            //injectDependency(typeof(IUserClient), typeof(UserClient), services, scoped);
             injectDependency(typeof(ISocialNetworkService), typeof(SocialNetworkService), services, scoped);
             injectDependency(typeof(IClientService), typeof(ClientService), services, scoped);
             injectDependency(typeof(IPostService), typeof(PostService), services, scoped);
             injectDependency(typeof(IS3Service), typeof(S3Service), services, scoped);
             injectDependency(typeof(ITwitterService), typeof(TwitterService), services, scoped);
+            injectDependency(typeof(IXService), typeof(XService), services, scoped);
+            injectDependency(typeof(IXTokenService), typeof(XTokenService), services, scoped);
             // Adicione aqui se houver um serviço para SocialNetwork
             #endregion
 
@@ -63,9 +66,18 @@ namespace BazzucaMedia.Application
             injectDependency(typeof(IClientDomainFactory), typeof(ClientDomainFactory), services, scoped);
             #endregion
 
+            if (scoped)
+            {
+                services.AddScoped<IUserClient, UserClient>(new Func<IServiceProvider, UserClient>((apiURL) => new UserClient(API_URL)));
+            }
+            else
+            {
+                services.AddTransient<IUserClient, UserClient>(new Func<IServiceProvider, UserClient>((apiURL) => new UserClient(API_URL)));
+            }
 
-            services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, AuthHandler>("BasicAuthentication", null);
+
+                services.AddAuthentication("BasicAuthentication")
+                    .AddScheme<AuthenticationSchemeOptions, AuthHandler>("BasicAuthentication", null);
 
         }
     }

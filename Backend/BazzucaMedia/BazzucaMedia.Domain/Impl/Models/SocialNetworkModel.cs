@@ -24,6 +24,8 @@ namespace BazzucaMedia.Domain.Impl.Models
         public string Url { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
+        public string AccessToken { get; set; }
+        public string AccessSecret { get; set; }
 
         public IEnumerable<ISocialNetworkModel> ListByClient(long clientId, ISocialNetworkDomainFactory factory)
             => _repository.ListByClient(clientId, factory);
