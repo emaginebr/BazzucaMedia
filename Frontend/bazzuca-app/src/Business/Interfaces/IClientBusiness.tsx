@@ -1,6 +1,6 @@
 import ClientInfo from "@/DTO/Domain/ClientInfo";
+import { BusinessResult } from "@/lib/nauth-core";
 import IClientService from "@/Services/Interfaces/IClientService";
-import { BusinessResult } from "nauth-core";
 
 export default interface IClientBusiness {
   init: (clientService: IClientService) => void;
