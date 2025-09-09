@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { AuthContext, IAuthProvider } from 'nauth-core';
 import logo from "@/assets/images/logo.png";
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 //interface LoginProps {
 //  setIsAuthenticated: (auth: boolean) => void;
@@ -21,12 +21,12 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const authContext = useContext<IAuthProvider>(AuthContext);
+  const userContext = useContext<IUserProvider>(UserContext);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let ret = await authContext.loginWithEmail(email, password);
+    let ret = await userContext.loginWithEmail(email, password);
     if (!ret.sucesso) {
       toast.error(ret.mensagemErro);
       return;
@@ -84,8 +84,8 @@ export default function Login() {
                   Forgot password?
                 </Link>
               </div>
-              <Button type="submit" className="w-full btn-gradient" disabled={authContext.loading}>
-                {authContext.loading ? "Signing in..." : "Sign In"}
+              <Button type="submit" className="w-full btn-gradient" disabled={userContext.loading}>
+                {userContext.loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
             <div className="mt-6 text-center">

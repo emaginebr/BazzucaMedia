@@ -20,9 +20,6 @@ namespace BazzucaMedia.Application
 {
     public static class Initializer
     {
-        //private static readonly string API_URL = "https://emagine.com.br/auth-api";
-        private static readonly string API_URL = "https://nauth-api1:443";
-
         private static void injectDependency(Type serviceType, Type implementationType, IServiceCollection services, bool scoped = true)
         {
             if (scoped)
@@ -30,12 +27,12 @@ namespace BazzucaMedia.Application
             else
                 services.AddTransient(serviceType, implementationType);
         }
-        public static void Configure(IServiceCollection services, ConfigurationParam config, bool scoped = true)
+        public static void Configure(IServiceCollection services, string connection, bool scoped = true)
         {
             if (scoped)
-                services.AddDbContext<BazzucaContext>(x => x.UseLazyLoadingProxies().UseNpgsql(config.ConnectionString));
+                services.AddDbContext<BazzucaContext>(x => x.UseLazyLoadingProxies().UseNpgsql(connection));
             else
-                services.AddDbContextFactory<BazzucaContext>(x => x.UseLazyLoadingProxies().UseNpgsql(config.ConnectionString));
+                services.AddDbContextFactory<BazzucaContext>(x => x.UseLazyLoadingProxies().UseNpgsql(connection));
 
             #region Infra
             injectDependency(typeof(BazzucaContext), typeof(BazzucaContext), services, scoped);
@@ -67,18 +64,11 @@ namespace BazzucaMedia.Application
             injectDependency(typeof(IClientDomainFactory), typeof(ClientDomainFactory), services, scoped);
             #endregion
 
-            if (scoped)
-            {
-                services.AddScoped<IUserClient, UserClient>(new Func<IServiceProvider, UserClient>((apiURL) => new UserClient(API_URL)));
-            }
-            else
-            {
-                services.AddTransient<IUserClient, UserClient>(new Func<IServiceProvider, UserClient>((apiURL) => new UserClient(API_URL)));
-            }
+            injectDependency(typeof(IUserClient), typeof(UserClient), services, scoped);
 
 
                 services.AddAuthentication("BasicAuthentication")
-                    .AddScheme<AuthenticationSchemeOptions, AuthHandler>("BasicAuthentication", null);
+                    .AddScheme<AuthenticationSchemeOptions, RemoteAuthHandler>("BasicAuthentication", null);
 
         }
     }

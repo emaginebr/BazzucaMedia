@@ -1,8 +1,8 @@
 import ClientListResult from "@/DTO/Services/ClientListResult";
 import ClientResult from "@/DTO/Services/ClientResult";
-import { IHttpClient, StatusRequest } from "nauth-core";
 import IClientService from "../Interfaces/IClientService";
 import ClientInfo from "@/DTO/Domain/ClientInfo";
+import { IHttpClient, StatusRequest } from "@/lib/nauth-core";
 
 let _httpClient : IHttpClient;
 

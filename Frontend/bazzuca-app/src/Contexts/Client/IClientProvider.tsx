@@ -1,5 +1,5 @@
 import ClientInfo from "@/DTO/Domain/ClientInfo";
-import { ProviderResult } from "nauth-core";
+import { ProviderResult } from "@/lib/nauth-core";
 
 interface IClientProvider {
     loading: boolean;

@@ -1,7 +1,7 @@
 import ISocialNetworkService from "@/Services/Interfaces/ISocialNetworkService";
 import ISocialNetworkBusiness from "../Interfaces/ISocialNetworkBusiness";
 import SocialNetworkInfo from "@/DTO/Domain/SocialNetworkInfo";
-import { AuthFactory, AuthSession, BusinessResult } from "nauth-core";
+import { AuthSession, BusinessResult, UserFactory } from "@/lib/nauth-core";
 
 let _SocialNetworkService: ISocialNetworkService;
 
@@ -12,7 +12,7 @@ const SocialNetworkBusiness: ISocialNetworkBusiness = {
   listByClient: async (clientId: number) => {
     try {
       let ret: BusinessResult<SocialNetworkInfo[]>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -41,7 +41,7 @@ const SocialNetworkBusiness: ISocialNetworkBusiness = {
   getById: async (id: number) => {
     try {
       let ret: BusinessResult<SocialNetworkInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -70,7 +70,7 @@ const SocialNetworkBusiness: ISocialNetworkBusiness = {
   insert: async (SocialNetwork: SocialNetworkInfo) => {
     try {
       let ret: BusinessResult<SocialNetworkInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -99,7 +99,7 @@ const SocialNetworkBusiness: ISocialNetworkBusiness = {
   update: async (SocialNetwork: SocialNetworkInfo) => {
     try {
       let ret: BusinessResult<SocialNetworkInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -128,7 +128,7 @@ const SocialNetworkBusiness: ISocialNetworkBusiness = {
   delete: async (id: number) => {
     try {
       let ret: BusinessResult<boolean>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,

@@ -20,11 +20,8 @@ namespace BazzucaMedia.BackgroundService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var config = new ConfigurationParam
-            {
-                ConnectionString = Configuration.GetConnectionString("NoChainSwapContext")
-            };
-            Initializer.Configure(services, config, false);
+            Initializer.Configure(services, Configuration.GetConnectionString("BazzucaContext"), false);
+
             services.AddHostedService<Service>();
             //services.AddHostedService<ServiceDaily>();
             services.AddTransient(typeof(ScheduleTask), typeof(ScheduleTask));

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NAuth.DTO.Settings;
 using System;
 using System.Net.Mime;
 using System.Text.Json;
@@ -26,11 +27,10 @@ namespace BazzucaMedia.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var config = new ConfigurationParam
-            {
-                ConnectionString = Configuration.GetConnectionString("BazzucaContext")
-            };
-            Initializer.Configure(services, config);
+            services.Configure<MailerSendSetting>(Configuration.GetSection("MailerSend"));
+            services.Configure<NAuthSetting>(Configuration.GetSection("NAuth"));
+
+            Initializer.Configure(services, Configuration.GetConnectionString("BazzucaContext"));
             services.AddControllers();
             services.AddHealthChecks();
             services.AddSwaggerGen(c =>

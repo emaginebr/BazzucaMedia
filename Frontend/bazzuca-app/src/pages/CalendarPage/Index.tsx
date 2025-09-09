@@ -4,7 +4,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PostForm } from "@/pages/Post/PostForm";
-import { AuthContext, IAuthProvider } from "nauth-core";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,12 +25,13 @@ import { format, getDay, parse, startOfWeek } from "date-fns";
 import { enUS } from "date-fns/locale";
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 export default function CalendarPage() {
 
     const navigate = useNavigate();
 
-    const authContext = useContext<IAuthProvider>(AuthContext);
+    const userContext = useContext<IUserProvider>(UserContext);
     const postContext = useContext<IPostProvider>(PostContext);
 
     const [events, setEvents] = useState<any[]>([]);
@@ -63,8 +63,8 @@ export default function CalendarPage() {
     };
 
     useEffect(() => {
-        authContext.loadUserSession().then(async (ret) => {
-            if (!authContext.sessionInfo) {
+        userContext.loadUserSession().then(async (ret) => {
+            if (!userContext.sessionInfo) {
                 navigate("/login");
                 return;
             }

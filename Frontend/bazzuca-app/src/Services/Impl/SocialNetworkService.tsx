@@ -1,8 +1,8 @@
-import { IHttpClient, StatusRequest } from "nauth-core";
 import ISocialNetworkService from "../Interfaces/ISocialNetworkService";
 import SocialNetworkListResult from "@/DTO/Services/SocialNetworkListResult";
 import SocialNetworkResult from "@/DTO/Services/SocialNetworkResult";
 import SocialNetworkInfo from "@/DTO/Domain/SocialNetworkInfo";
+import { IHttpClient, StatusRequest } from "@/lib/nauth-core";
 
 let _httpClient : IHttpClient;
 

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import IPostProvider from "./IPostProvider";
-import { ProviderResult } from "nauth-core";
 import PostFactory from "@/Business/Factory/PostFactory";
 import PostInfo from "@/DTO/Domain/PostInfo";
 import PostContext from "./PostContext";
@@ -8,6 +7,7 @@ import ImageFactory from "@/Business/Factory/ImageFactory";
 import PostProviderResult from "@/DTO/Context/PostProviderResult";
 import PostListPagedInfo from "@/DTO/Domain/PostListPagedInfo";
 import PostSearchParam from "@/DTO/Services/PostSearchParam";
+import { ProviderResult } from "@/lib/nauth-core";
 
 export default function PostProvider(props: any) {
 

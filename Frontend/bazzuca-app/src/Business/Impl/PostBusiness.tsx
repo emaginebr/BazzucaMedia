@@ -1,9 +1,9 @@
 import IPostService from "@/Services/Interfaces/IPostService";
 import IPostBusiness from "../Interfaces/IPostBusiness";
 import PostInfo from "@/DTO/Domain/PostInfo";
-import { AuthFactory, AuthSession, BusinessResult } from "nauth-core";
 import PostSearchParam from "@/DTO/Services/PostSearchParam";
 import PostListPagedInfo from "@/DTO/Domain/PostListPagedInfo";
+import { AuthSession, BusinessResult, UserFactory } from "@/lib/nauth-core";
 
 let _PostService: IPostService;
 
@@ -14,7 +14,7 @@ const PostBusiness: IPostBusiness = {
   listByUser: async (month: number, year: number) => {
     try {
       let ret: BusinessResult<PostInfo[]>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -43,7 +43,7 @@ const PostBusiness: IPostBusiness = {
   search: async (param: PostSearchParam) => {
     try {
       let ret: BusinessResult<PostListPagedInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -79,7 +79,7 @@ const PostBusiness: IPostBusiness = {
   getById: async (id: number) => {
     try {
       let ret: BusinessResult<PostInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -108,7 +108,7 @@ const PostBusiness: IPostBusiness = {
   insert: async (Post: PostInfo) => {
     try {
       let ret: BusinessResult<PostInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -137,7 +137,7 @@ const PostBusiness: IPostBusiness = {
   update: async (Post: PostInfo) => {
     try {
       let ret: BusinessResult<PostInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -166,7 +166,7 @@ const PostBusiness: IPostBusiness = {
   publish: async (postId: number) => {
     try {
       let ret: BusinessResult<PostInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,

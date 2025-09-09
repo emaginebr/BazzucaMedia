@@ -4,7 +4,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PostForm } from "@/pages/Post/PostForm";
-import { AuthContext, IAuthProvider } from "nauth-core";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,13 +16,14 @@ import PostSearchParam from "@/DTO/Services/PostSearchParam";
 import IClientProvider from "@/Contexts/Client/IClientProvider";
 import ClientContext from "@/Contexts/Client/ClientContext";
 import SocialNetworkEnum from "@/DTO/Enum/SocialNetworkEnum";
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 
 export default function PostList() {
 
     const navigate = useNavigate();
 
-    const authContext = useContext<IAuthProvider>(AuthContext);
+    const userContext = useContext<IUserProvider>(UserContext);
     const clientContext = useContext<IClientProvider>(ClientContext);
     const postContext = useContext<IPostProvider>(PostContext);
 
@@ -33,7 +33,7 @@ export default function PostList() {
 
     const searchPost = async (pageNum: number, clientId?: number, network?: SocialNetworkEnum) => {
         let param: PostSearchParam = {
-            userId: authContext.sessionInfo.userId,
+            userId: userContext.sessionInfo.userId,
             clientId: clientId,
             network: network,
             status: null,
@@ -48,8 +48,8 @@ export default function PostList() {
 
 
     useEffect(() => {
-        authContext.loadUserSession().then(async (ret) => {
-            if (!authContext.sessionInfo) {
+        userContext.loadUserSession().then(async (ret) => {
+            if (!userContext.sessionInfo) {
                 navigate("/login");
                 return;
             }

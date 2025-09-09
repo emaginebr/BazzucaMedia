@@ -1,9 +1,9 @@
 import { useState } from "react";
 import IClientProvider from "./IClientProvider";
-import { ProviderResult } from "nauth-core";
 import ClientFactory from "@/Business/Factory/ClientFactory";
 import ClientInfo from "@/DTO/Domain/ClientInfo";
 import ClientContext from "./ClientContext";
+import { ProviderResult } from "@/lib/nauth-core";
 
 export default function ClientProvider(props: any) {
 

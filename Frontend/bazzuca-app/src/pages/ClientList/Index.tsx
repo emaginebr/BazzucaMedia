@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PostForm } from "@/pages/Post/PostForm";
-import { AuthContext, IAuthProvider } from "nauth-core";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import ClientTable from "./ClientTable";
@@ -17,6 +16,7 @@ import Header from "./Header";
 import ClientDialog from "./ClientDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import ClientResult from "@/DTO/Services/ClientResult";
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 
 export default function ClientList() {
@@ -27,13 +27,13 @@ export default function ClientList() {
 
     const navigate = useNavigate();
 
-    const authContext = useContext<IAuthProvider>(AuthContext);
+    const userContext = useContext<IUserProvider>(UserContext);
     const clientContext = useContext<IClientProvider>(ClientContext);
 
 
     useEffect(() => {
-        authContext.loadUserSession().then((ret) => {
-            if (!authContext.sessionInfo) {
+        userContext.loadUserSession().then((ret) => {
+            if (!userContext.sessionInfo) {
                 navigate("/login");
                 return;
             }

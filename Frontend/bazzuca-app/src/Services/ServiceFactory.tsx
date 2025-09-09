@@ -1,5 +1,4 @@
 import IClientService from './Interfaces/IClientService';
-import { HttpClient, IHttpClient } from 'nauth-core';
 import ClientService from './Impl/ClientService';
 import ISocialNetworkService from './Interfaces/ISocialNetworkService';
 import SocialNetworkService from './Impl/SocialNetworkService';
@@ -7,6 +6,7 @@ import IPostService from './Interfaces/IPostService';
 import PostService from './Impl/PostService';
 import IImageService from './Interfaces/IImageService';
 import ImageService from './Impl/ImageService';
+import { HttpClient, IHttpClient } from '@/lib/nauth-core';
 
 const httpClientAuth : IHttpClient = HttpClient();
 httpClientAuth.init(import.meta.env.VITE_API_URL);

@@ -5,18 +5,18 @@ import Features from "./Features";
 import Pricing from "./Pricing";
 import FAQ from "./FAQ";
 import { useContext, useEffect } from "react";
-import { AuthContext, IAuthProvider } from "nauth-core";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 export default function HomePage() {
 
   const navigate = useNavigate();
 
-  const authContext = useContext<IAuthProvider>(AuthContext);
+  const userContext = useContext<IUserProvider>(UserContext);
 
   useEffect(() => {
-    authContext.loadUserSession().then((ret) => {
+    userContext.loadUserSession().then((ret) => {
       if (!ret.sucesso) {
         toast.error(ret.mensagemErro);
         return;
@@ -27,9 +27,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-dark">
       <Header 
-        sessionInfo={authContext.sessionInfo} 
+        sessionInfo={userContext.sessionInfo} 
         logout={() => {
-          authContext.logout();
+          userContext.logout();
           navigate('/');
         }}
       />

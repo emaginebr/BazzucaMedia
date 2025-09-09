@@ -1,4 +1,0 @@
-@echo off
-cd .\Backend\BazzucaMedia\DB.Infra
-dotnet ef dbcontext scaffold "Host=localhost;Port=25060;Database=bazzucasocial;Username=admin;Password=password" Npgsql.EntityFrameworkCore.PostgreSQL --context BazzucaContext --output-dir Context -f
-pause

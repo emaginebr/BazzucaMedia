@@ -1,9 +1,9 @@
 import { useState } from "react";
 import ISocialNetworkProvider from "./ISocialNetworkProvider";
-import { ProviderResult } from "nauth-core";
 import SocialNetworkFactory from "@/Business/Factory/SocialNetworkFactory";
 import SocialNetworkInfo from "@/DTO/Domain/SocialNetworkInfo";
 import SocialNetworkContext from "./SocialNetworkContext";
+import { ProviderResult } from "@/lib/nauth-core";
 
 export default function SocialNetworkProvider(props: any) {
 

@@ -10,7 +10,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard/Index";
 import Post from "./pages/Post/Index";
 import NotFound from "./pages/NotFound";
-import { AuthProvider, ContextBuilder, UserProvider } from "nauth-core";
 import ClientProvider from "./Contexts/Client/ClientProvider";
 import ClientList from "./pages/ClientList/Index";
 import SocialNetworkProvider from "./Contexts/SocialNetwork/SocialNetworkProvider";
@@ -18,13 +17,14 @@ import ClientDetail from "./pages/ClientDetail/Index";
 import PostProvider from "./Contexts/Post/PostProvider";
 import PostList from "./pages/PostList/Index";
 import CalendarPage from "./pages/CalendarPage/Index";
+import { ContextBuilder, UserProvider } from "./lib/nauth-core";
 
 const queryClient = new QueryClient();
 
 function App() {
 
   const ContextContainer = ContextBuilder([
-    AuthProvider, UserProvider, ClientProvider, SocialNetworkProvider,
+    UserProvider, ClientProvider, SocialNetworkProvider,
     PostProvider
   ]);
 

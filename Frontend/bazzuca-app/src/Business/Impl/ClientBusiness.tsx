@@ -1,7 +1,7 @@
 import IClientService from "@/Services/Interfaces/IClientService";
 import IClientBusiness from "../Interfaces/IClientBusiness";
 import ClientInfo from "@/DTO/Domain/ClientInfo";
-import { AuthFactory, AuthSession, BusinessResult } from "nauth-core";
+import { AuthSession, BusinessResult, UserFactory } from "@/lib/nauth-core";
 
 let _clientService: IClientService;
 
@@ -12,7 +12,7 @@ const ClientBusiness: IClientBusiness = {
   listByUser: async () => {
     try {
       let ret: BusinessResult<ClientInfo[]>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -41,7 +41,7 @@ const ClientBusiness: IClientBusiness = {
   getById: async (id: number) => {
     try {
       let ret: BusinessResult<ClientInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -70,7 +70,7 @@ const ClientBusiness: IClientBusiness = {
   insert: async (client: ClientInfo) => {
     try {
       let ret: BusinessResult<ClientInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -99,7 +99,7 @@ const ClientBusiness: IClientBusiness = {
   update: async (client: ClientInfo) => {
     try {
       let ret: BusinessResult<ClientInfo>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,
@@ -128,7 +128,7 @@ const ClientBusiness: IClientBusiness = {
   delete: async (id: number) => {
     try {
       let ret: BusinessResult<boolean>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,

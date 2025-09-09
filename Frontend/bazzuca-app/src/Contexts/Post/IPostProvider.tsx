@@ -2,7 +2,7 @@ import PostProviderResult from "@/DTO/Context/PostProviderResult";
 import PostInfo from "@/DTO/Domain/PostInfo";
 import PostListPagedInfo from "@/DTO/Domain/PostListPagedInfo";
 import PostSearchParam from "@/DTO/Services/PostSearchParam";
-import { ProviderResult } from "nauth-core";
+import { ProviderResult } from "@/lib/nauth-core";
 
 interface IPostProvider {
     loading: boolean;

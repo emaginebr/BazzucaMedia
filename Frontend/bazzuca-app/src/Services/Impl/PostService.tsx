@@ -1,10 +1,10 @@
 import PostListResult from "@/DTO/Services/PostListResult";
 import PostResult from "@/DTO/Services/PostResult";
-import { IHttpClient, StatusRequest } from "nauth-core";
 import IPostService from "../Interfaces/IPostService";
 import PostInfo from "@/DTO/Domain/PostInfo";
 import PostSearchParam from "@/DTO/Services/PostSearchParam";
 import PostListPagedResult from "@/DTO/Services/PostListPagedResult";
+import { IHttpClient } from "@/lib/nauth-core";
 
 let _httpPost : IHttpClient;
 

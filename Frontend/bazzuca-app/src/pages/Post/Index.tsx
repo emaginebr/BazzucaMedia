@@ -4,7 +4,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PostForm } from "@/pages/Post/PostForm";
-import { AuthContext, IAuthProvider } from "nauth-core";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import IPostProvider from "@/Contexts/Post/IPostProvider";
@@ -17,6 +16,7 @@ import Header from "./Header";
 import ISocialNetworkProvider from "@/Contexts/SocialNetwork/ISocialNetworkProvider";
 import SocialNetworkContext from "@/Contexts/SocialNetwork/SocialNetworkContext";
 import logo from "@/assets/images/logo.png";
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 
 export default function Post() {
@@ -27,13 +27,13 @@ export default function Post() {
 
   const { postId } = useParams<"postId">();
 
-  const authContext = useContext<IAuthProvider>(AuthContext);
+  const userContext = useContext<IUserProvider>(UserContext);
   const networkContext = useContext<ISocialNetworkProvider>(SocialNetworkContext);
   const postContext = useContext<IPostProvider>(PostContext);
 
   const loadPost = async () => {
     setLoading(true);
-    if (!authContext.sessionInfo) {
+    if (!userContext.sessionInfo) {
       setLoading(false);
       navigate("/login");
       return;

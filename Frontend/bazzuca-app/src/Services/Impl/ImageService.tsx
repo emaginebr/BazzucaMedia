@@ -1,4 +1,4 @@
-import { IHttpClient, StringResult } from "nauth-core";
+import { IHttpClient, StringResult } from "@/lib/nauth-core";
 import IImageService from "../Interfaces/IImageService";
 
 let _httpClient : IHttpClient;

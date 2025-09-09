@@ -1,6 +1,6 @@
 import IImageService from "@/Services/Interfaces/IImageService";
 import IImageBusiness from "../Interfaces/IImageBusiness";
-import { AuthFactory, AuthSession, BusinessResult } from "nauth-core";
+import { AuthSession, BusinessResult, UserFactory } from "@/lib/nauth-core";
 
 let _imageService: IImageService;
 
@@ -11,7 +11,7 @@ const ImageBusiness: IImageBusiness = {
   uploadImage: async (file: Blob, filename: string) => {
     try {
       let ret: BusinessResult<string>;
-      let session: AuthSession = AuthFactory.AuthBusiness.getSession();
+      let session: AuthSession = UserFactory.UserBusiness.getSession();
       if (!session) {
         return {
           ...ret,

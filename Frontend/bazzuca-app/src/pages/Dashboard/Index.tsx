@@ -7,17 +7,17 @@ import Header from "./Header";
 import StatCards from "./StatCards";
 import CalendarPart from "./CalendarPart";
 import RecentPosts from "./RecentPosts";
-import { AuthContext, IAuthProvider } from "nauth-core";
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 export default function Dashboard() {
 
   const navigate = useNavigate();
 
-  const authContext = useContext<IAuthProvider>(AuthContext);
+  const userContext = useContext<IUserProvider>(UserContext);
 
   useEffect(() => {
-    authContext.loadUserSession().then((ret) => {
-      if (!authContext.sessionInfo) {
+    userContext.loadUserSession().then((ret) => {
+      if (!userContext.sessionInfo) {
         navigate("/login");
         return;
       }

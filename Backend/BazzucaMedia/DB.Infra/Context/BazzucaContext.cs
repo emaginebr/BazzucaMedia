@@ -21,13 +21,6 @@ public partial class BazzucaContext : DbContext
 
     public virtual DbSet<SocialNetwork> SocialNetworks { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#if DEBUG
-        => optionsBuilder.UseNpgsql("Host=emagine-db-do-user-4436480-0.e.db.ondigitalocean.com;Port=25060;Database=bazzucasocial;Username=doadmin;Password=AVNS_akcvzXVnMkvNKaO10-O");
-#else
-        => optionsBuilder.UseNpgsql("Host=private-emagine-db-do-user-4436480-0.e.db.ondigitalocean.com;Port=25060;Database=bazzucasocial;Username=doadmin;Password=AVNS_akcvzXVnMkvNKaO10-O");
-#endif
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Client>(entity =>

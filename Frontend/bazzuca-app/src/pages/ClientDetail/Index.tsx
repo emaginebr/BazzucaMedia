@@ -4,7 +4,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PostForm } from "@/pages/Post/PostForm";
-import { AuthContext, IAuthProvider } from "nauth-core";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +19,7 @@ import ISocialNetworkProvider from "@/Contexts/SocialNetwork/ISocialNetworkProvi
 import SocialNetworkContext from "@/Contexts/SocialNetwork/SocialNetworkContext";
 import NetworkDialog from "./NetworkDialog";
 import SocialNetworkResult from "@/DTO/Services/SocialNetworkResult";
+import { IUserProvider, UserContext } from "@/lib/nauth-core";
 
 
 export default function ClientDetail() {
@@ -32,15 +32,15 @@ export default function ClientDetail() {
 
     const { clientId } = useParams<{ clientId: string }>();
 
-    const authContext = useContext<IAuthProvider>(AuthContext);
+    const userContext = useContext<IUserProvider>(UserContext);
     const clientContext = useContext<IClientProvider>(ClientContext);
     const networkContext = useContext<ISocialNetworkProvider>(SocialNetworkContext);
 
 
     useEffect(() => {
         networkContext.setNetworks([]);
-        authContext.loadUserSession().then((ret) => {
-            if (!authContext.sessionInfo) {
+        userContext.loadUserSession().then((ret) => {
+            if (!userContext.sessionInfo) {
                 navigate("/login");
                 return;
             }
