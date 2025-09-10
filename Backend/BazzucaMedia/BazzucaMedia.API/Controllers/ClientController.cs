@@ -3,7 +3,7 @@ using BazzucaMedia.DTO.Client;
 using BazzucaMedia.DTO.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NAuth.Client;
+using NAuth.ACL;
 using System;
 using System.Linq;
 

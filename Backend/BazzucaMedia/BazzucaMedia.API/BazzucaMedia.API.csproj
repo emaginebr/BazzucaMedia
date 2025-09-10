@@ -40,8 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="NAuth.Client">
-      <HintPath>..\Lib\NAuth.Client.dll</HintPath>
+    <Reference Include="NAuth.ACL">
+      <HintPath>..\Lib\NAuth.ACL.dll</HintPath>
     </Reference>
     <Reference Include="NAuth.DTO">
       <HintPath>..\Lib\NAuth.DTO.dll</HintPath>

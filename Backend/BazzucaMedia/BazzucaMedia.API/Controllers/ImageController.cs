@@ -3,7 +3,7 @@ using BazzucaMedia.DTO.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NAuth.Client;
+using NAuth.ACL;
 using System;
 
 namespace BazzucaMedia.API.Controllers

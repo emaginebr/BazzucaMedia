@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="NAuth.Client">
-      <HintPath>..\Lib\NAuth.Client.dll</HintPath>
+    <Reference Include="NAuth.ACL">
+      <HintPath>..\Lib\NAuth.ACL.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@ using DB.Infra.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NAuth.Client;
+using NAuth.ACL;
 using System;
 
 namespace BazzucaMedia.Application
