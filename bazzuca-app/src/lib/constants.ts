@@ -6,12 +6,6 @@ export const ROUTES = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
-  TAGS: '/tags',
-  CATEGORIES: '/categories',
-  ARTICLES: '/articles',
-  ARTICLES_NEW: '/articles/new',
-  ARTICLES_EDIT: (id: number) => `/articles/edit/${id}`,
-  ARTICLES_VIEW: (id: number) => `/articles/${id}`,
   // BazzucaMedia Routes
   CLIENTS: '/clients',
   POSTS: '/posts',
@@ -24,5 +18,5 @@ export const ROUTES = {
 export const EXTERNAL_LINKS = {
   TERMS: '/terms',
   PRIVACY: '/privacy',
-  DOCS: 'https://github.com/landim32/News',
+  DOCS: 'https://github.com/landim32/BazzucaMedia',
 } as const;

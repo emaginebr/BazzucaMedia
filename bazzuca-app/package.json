@@ -15,7 +15,6 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",
     "nauth-react": "latest",
-    "nnews-react": "latest",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.11.0",

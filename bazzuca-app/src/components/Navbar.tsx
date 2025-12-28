@@ -2,21 +2,16 @@ import { Link } from 'react-router-dom';
 import { useAuth } from 'nauth-react';
 import { APP_NAME, ROUTES } from '../lib/constants';
 import { UserMenu } from './UserMenu';
-import { Shield, LayoutDashboard, Tag, FolderTree, Newspaper, ChevronDown, FileText, Users, MessageSquare, Calendar } from 'lucide-react';
+import { Shield, LayoutDashboard, ChevronDown, Users, MessageSquare, Calendar } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 export function Navbar() {
   const { isAuthenticated } = useAuth();
-  const [newsMenuOpen, setNewsMenuOpen] = useState(false);
   const [bazzucaMenuOpen, setBazzucaMenuOpen] = useState(false);
-  const newsMenuRef = useRef<HTMLDivElement>(null);
   const bazzucaMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (newsMenuRef.current && !newsMenuRef.current.contains(event.target as Node)) {
-        setNewsMenuOpen(false);
-      }
       if (bazzucaMenuRef.current && !bazzucaMenuRef.current.contains(event.target as Node)) {
         setBazzucaMenuOpen(false);
       }
@@ -47,46 +42,6 @@ export function Navbar() {
                   <LayoutDashboard className="w-4 h-4" />
                   Dashboard
                 </Link>
-                
-                <div className="relative" ref={newsMenuRef}>
-                  <button
-                    onClick={() => setNewsMenuOpen(!newsMenuOpen)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    <Newspaper className="w-4 h-4" />
-                    News
-                    <ChevronDown className={`w-4 h-4 transition-transform ${newsMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {newsMenuOpen && (
-                    <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 z-50">
-                      <Link
-                        to={ROUTES.ARTICLES}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        onClick={() => setNewsMenuOpen(false)}
-                      >
-                        <FileText className="w-4 h-4" />
-                        Articles
-                      </Link>
-                      <Link
-                        to={ROUTES.CATEGORIES}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        onClick={() => setNewsMenuOpen(false)}
-                      >
-                        <FolderTree className="w-4 h-4" />
-                        Categories
-                      </Link>
-                      <Link
-                        to={ROUTES.TAGS}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        onClick={() => setNewsMenuOpen(false)}
-                      >
-                        <Tag className="w-4 h-4" />
-                        Tags
-                      </Link>
-                    </div>
-                  )}
-                </div>
 
                 <div className="relative" ref={bazzucaMenuRef}>
                   <button
