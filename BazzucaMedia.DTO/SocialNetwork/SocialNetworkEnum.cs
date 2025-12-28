@@ -8,6 +8,8 @@
         LinkedIn = 4,
         TikTok = 5,
         YouTube = 6,
-
+        WhatsApp = 7,
+        SMS = 8,
+        Email = 9
     }
 }

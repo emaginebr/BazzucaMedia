@@ -130,7 +130,7 @@ namespace BazzucaMedia.API.Controllers
             }
         }
 
-        [HttpPost("publish/{postId}")]
+        [HttpGet("publish/{postId:long}")]
         [Authorize]
         public async Task<ActionResult<PostInfo>> Publish(long postId)
         {

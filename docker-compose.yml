@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
+    container_name: bazzuca-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - emagine-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bazzuca-api:
+    build:
+      context: .
+      dockerfile: BazzucaAPI.Dockerfile
+    container_name: bazzuca-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Docker}
+      - ASPNETCORE_URLS=http://+:8080;https://+:8443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${CERTIFICATE_PATH}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERTIFICATE_PASSWORD}
+      - ASPNETCORE_HTTPS_PORT=8443
+      - ConnectionStrings__NNewsContext=${CONNECTION_STRING}
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "${API_HTTP_PORT:-5010}:8080"
+      - "${API_HTTPS_PORT:-5011}:8443"
+    volumes:
+      - nnews_logs:/app/logs
+      - ./certs:/app/certs:ro
+    networks:
+      - emagine-network
+
+  bazzuca-app:
+    build:
+      context: .
+      dockerfile: BazzucaApp.Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:5004}
+        - VITE_BAZZUCA_API_URL=${VITE_NNEWS_API_URL:-https://localhost:5011}
+        - NODE_ENV=${NODE_ENV:-development}
+    container_name: nnews-app
+    restart: unless-stopped
+    depends_on:
+      - bazzuca-api
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    ports:
+      - "${BAZZUCA_APP_PORT:-5009}:80"
+    networks:
+      - emagine-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+    driver: local
+  nnews_logs:
+    driver: local
+
+networks:
+  emagine-network:
+    name: emagine-network
+    external: true
