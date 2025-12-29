@@ -6,6 +6,7 @@ import { getSocialNetworkName } from '../types/bazzuca';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { ConfirmDialog } from './ConfirmDialog';
 import { cn } from '../utils/cn';
 
 export interface SocialNetworkListProps {
@@ -27,17 +28,32 @@ export function SocialNetworkList({
 }: SocialNetworkListProps) {
   const { networks, loading, error, deleteNetwork } = useSocialNetworks(clientId);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [networkToDelete, setNetworkToDelete] = useState<number | null>(null);
 
-  const handleDelete = async (networkId: number) => {
-    if (window.confirm('Are you sure you want to delete this social network?')) {
-      setDeletingId(networkId);
-      const success = await deleteNetwork(networkId);
-      setDeletingId(null);
-      
-      if (success && onDelete) {
-        onDelete(networkId);
-      }
+  const handleDeleteClick = (networkId: number) => {
+    setNetworkToDelete(networkId);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (networkToDelete === null) return;
+    
+    setDeletingId(networkToDelete);
+    const success = await deleteNetwork(networkToDelete);
+    setDeletingId(null);
+    setShowDeleteDialog(false);
+    
+    if (success && onDelete) {
+      onDelete(networkToDelete);
     }
+    
+    setNetworkToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    setNetworkToDelete(null);
   };
 
   if (!clientId) {
@@ -124,7 +140,7 @@ export function SocialNetworkList({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(network.networkId)}
+                        onClick={() => handleDeleteClick(network.networkId)}
                         disabled={deletingId === network.networkId}
                       >
                         <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
@@ -138,6 +154,18 @@ export function SocialNetworkList({
           </Table>
         )}
       </CardContent>
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Social Network"
+        description="Are you sure you want to delete this social network? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        loading={deletingId !== null}
+        variant="destructive"
+      />
     </Card>
   );
 }

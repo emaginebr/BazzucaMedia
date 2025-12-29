@@ -28,6 +28,7 @@ services:
     build:
       context: .
       dockerfile: BazzucaAPI.Dockerfile
+    image: bazzucamedia-bazzuca-api:latest
     container_name: bazzuca-api
     restart: unless-stopped
     depends_on:
@@ -36,19 +37,25 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Docker}
       - ASPNETCORE_URLS=http://+:8080;https://+:8443
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=${CERTIFICATE_PATH}
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERTIFICATE_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${CERTIFICATE_PATH:-}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERTIFICATE_PASSWORD:-}
       - ASPNETCORE_HTTPS_PORT=8443
-      - ConnectionStrings__NNewsContext=${CONNECTION_STRING}
-      - JWT_SECRET=${JWT_SECRET}
+      - ConnectionStrings__BazzucaContext=${CONNECTION_STRING}
+      - NAuth__JwtSecret=${JWT_SECRET}
     ports:
       - "${API_HTTP_PORT:-5010}:8080"
       - "${API_HTTPS_PORT:-5011}:8443"
     volumes:
-      - nnews_logs:/app/logs
-      - ./certs:/app/certs:ro
+      - bazzuca_logs:/app/logs
+      - ${CERTIFICATE_DIRECTORY:-./certs}:/app/certs:ro
     networks:
       - emagine-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   bazzuca-app:
     build:
@@ -56,16 +63,17 @@ services:
       dockerfile: BazzucaApp.Dockerfile
       args:
         - VITE_API_URL=${VITE_API_URL:-http://localhost:5004}
-        - VITE_BAZZUCA_API_URL=${VITE_NNEWS_API_URL:-https://localhost:5011}
+        - VITE_BAZZUCA_API_URL=${VITE_BAZZUCA_API_URL:-https://localhost:5011}
         - NODE_ENV=${NODE_ENV:-development}
-    container_name: nnews-app
+    image: bazzucamedia-bazzuca-app:latest
+    container_name: bazzuca-app
     restart: unless-stopped
     depends_on:
       - bazzuca-api
     environment:
       - NODE_ENV=${NODE_ENV:-development}
     ports:
-      - "${BAZZUCA_APP_PORT:-5009}:80"
+      - "${BAZZUCA_APP_PORT:-5012}:80"
     networks:
       - emagine-network
     healthcheck:
@@ -78,7 +86,7 @@ services:
 volumes:
   postgres_data:
     driver: local
-  nnews_logs:
+  bazzuca_logs:
     driver: local
 
 networks:

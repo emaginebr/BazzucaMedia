@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSocialNetworks } from '../hooks/useSocialNetworks';
 import type { SocialNetworkInfo, SocialNetworkEnum } from '../types/bazzuca';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
 
 export interface SocialNetworkModalProps {
   isOpen: boolean;
@@ -120,99 +108,108 @@ export function SocialNetworkModal({
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {network ? 'Edit Social Network' : 'Add Social Network'}
-          </DialogTitle>
-          <DialogDescription>
-            {network
-              ? 'Update the social network information below.'
-              : 'Enter the social network details.'}
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="w-full max-w-lg rounded-lg bg-white dark:bg-gray-800 p-6 shadow-xl">
+        <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {network ? 'Edit Social Network' : 'Add Social Network'}
+        </h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="network">Network Type</Label>
-              <Select
-                value={selectedNetwork.toString()}
-                onValueChange={(value) => setSelectedNetwork(Number(value) as SocialNetworkEnum)}
-                disabled={loading}
-              >
-                <SelectTrigger id="network">
-                  <SelectValue placeholder="Select a network" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SOCIAL_NETWORKS.map((net) => (
-                    <SelectItem key={net.value} value={net.value.toString()}>
-                      {net.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="url">URL</Label>
-              <Input
-                id="url"
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://instagram.com/username"
-                disabled={loading}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="user">Username</Label>
-              <Input
-                id="user"
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-                placeholder="username"
-                disabled={loading}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">
-                Password {network && <span className="text-sm text-gray-500">(leave blank to keep current)</span>}
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                disabled={loading}
-                required={!network}
-              />
-            </div>
-
-            {error && (
-              <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-              </div>
-            )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="network" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Network Type
+            </label>
+            <select
+              id="network"
+              value={selectedNetwork.toString()}
+              onChange={(e) => setSelectedNetwork(Number(e.target.value) as SocialNetworkEnum)}
+              disabled={loading}
+              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              {SOCIAL_NETWORKS.map((net) => (
+                <option key={net.value} value={net.value.toString()}>
+                  {net.label}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+          <div className="space-y-2">
+            <label htmlFor="url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              URL
+            </label>
+            <input
+              id="url"
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://instagram.com/username"
+              disabled={loading}
+              required
+              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="user" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Username
+            </label>
+            <input
+              id="user"
+              type="text"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+              placeholder="username"
+              disabled={loading}
+              required
+              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Password {network && <span className="text-sm text-gray-500 dark:text-gray-400">(leave blank to keep current)</span>}
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              disabled={loading}
+              required={!network}
+              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {error && (
+            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="rounded-md border border-gray-300 dark:border-gray-600 px-6 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+            >
               Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+            >
               {loading ? 'Saving...' : network ? 'Update' : 'Add'}
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

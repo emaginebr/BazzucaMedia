@@ -6,8 +6,10 @@ import './styles/index.css';
 // BazzucaMedia Components - Clients
 export { ClientList } from './components/ClientList';
 export { ClientModal } from './components/ClientModal';
+export { ConfirmDialog } from './components/ConfirmDialog';
 export type { ClientListProps } from './components/ClientList';
 export type { ClientModalProps } from './components/ClientModal';
+export type { ConfirmDialogProps } from './components/ConfirmDialog';
 
 // BazzucaMedia Components - Social Networks
 export { SocialNetworkList } from './components/SocialNetworkList';
@@ -26,8 +28,8 @@ export type { PostViewerProps } from './components/PostViewer';
 export type { PostCalendarProps } from './components/PostCalendar';
 
 // Context Providers & Hooks
-export { BazzucaMediaProvider, useBazzucaMedia } from './contexts/BazzucaMediaContext';
-export type { BazzucaMediaContextValue, BazzucaMediaProviderProps } from './contexts/BazzucaMediaContext';
+export { BazzucaMediaProvider, useBazzucaMedia } from './contexts/BazzucaContext';
+export type { BazzucaMediaContextValue, BazzucaMediaProviderProps } from './contexts/BazzucaContext';
 
 // Custom Hooks - BazzucaMedia
 export { useClients } from './hooks/useClients';
@@ -48,8 +50,6 @@ export { Input } from './components/ui/input';
 export { Label } from './components/ui/label';
 export { Avatar, AvatarImage, AvatarFallback } from './components/ui/avatar';
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './components/ui/card';
-export { Dialog, DialogPortal, DialogOverlay, DialogClose, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from './components/ui/dialog';
-export { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem, SelectSeparator, SelectScrollUpButton, SelectScrollDownButton } from './components/ui/select';
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from './components/ui/table';
 
 // BazzucaMedia Types

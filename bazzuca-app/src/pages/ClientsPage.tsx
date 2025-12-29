@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ClientList, ClientModal, useClients } from 'bazzuca-react';
 import type { ClientInfo } from 'bazzuca-react';
 import { toast } from 'sonner';
+import { ROUTES } from '../lib/constants';
 
 export default function ClientsPage() {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientInfo | undefined>(undefined);
   const { refreshClients } = useClients();
@@ -18,16 +21,20 @@ export default function ClientsPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = () => {
-    toast.success('Client deleted successfully');
-    refreshClients();
+  const handleView = (client: ClientInfo) => {
+    navigate(ROUTES.CLIENT_NETWORKS(client.clientId));
   };
 
-  const handleSave = () => {
+  const handleDelete = async () => {
+    toast.success('Client deleted successfully');
+    await refreshClients();
+  };
+
+  const handleSave = async () => {
     toast.success(selectedClient ? 'Client updated successfully' : 'Client created successfully');
     setIsModalOpen(false);
     setSelectedClient(undefined);
-    refreshClients();
+    await refreshClients();
   };
 
   const handleClose = () => {
@@ -48,6 +55,7 @@ export default function ClientsPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onCreate={handleCreate}
+        onView={handleView}
         showCreateButton={true}
       />
 

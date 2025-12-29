@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PostEditor } from 'bazzuca-react';
 import { ROUTES } from '../lib/constants';
 import { toast } from 'sonner';
@@ -6,6 +6,8 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function PostEditPage() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const postId = id ? parseInt(id, 10) : undefined;
 
   const handleSave = () => {
     toast.success('Post saved successfully');
@@ -27,6 +29,7 @@ export default function PostEditPage() {
       </button>
 
       <PostEditor
+        postId={postId}
         onSave={handleSave}
         onCancel={handleCancel}
       />

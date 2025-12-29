@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useBazzucaMedia } from '../contexts/BazzucaMediaContext';
+import { useBazzucaMedia } from '../contexts/BazzucaContext';
 import type { ClientInfo, ClientInput, ClientUpdate } from '../types/bazzuca';
 
 export interface UseClientsReturn {

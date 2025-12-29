@@ -30,8 +30,9 @@ export function BazzucaMediaProvider({ config, children }: BazzucaMediaProviderP
   const [error, setError] = useState<Error | null>(null);
   const [selectedClient, setSelectedClient] = useState<ClientInfo | undefined>(undefined);
 
-  const contextValue = useMemo(() => {
-    const apiClient = axios.create({
+  // Create API client only when config changes
+  const apiClient = useMemo(() => {
+    const client = axios.create({
       baseURL: config.apiUrl,
       timeout: config.timeout || 30000,
       headers: {
@@ -41,7 +42,7 @@ export function BazzucaMediaProvider({ config, children }: BazzucaMediaProviderP
     });
 
     // Add request interceptor for loading state
-    apiClient.interceptors.request.use(
+    client.interceptors.request.use(
       (config) => {
         setIsLoading(true);
         return config;
@@ -53,7 +54,7 @@ export function BazzucaMediaProvider({ config, children }: BazzucaMediaProviderP
     );
 
     // Add response interceptor for loading state and error handling
-    apiClient.interceptors.response.use(
+    client.interceptors.response.use(
       (response) => {
         setIsLoading(false);
         return response;
@@ -74,23 +75,27 @@ export function BazzucaMediaProvider({ config, children }: BazzucaMediaProviderP
       }
     );
 
-    const clientApi = new ClientAPI(apiClient);
-    const socialNetworkApi = new SocialNetworkAPI(apiClient);
-    const postApi = new PostAPI(apiClient);
+    return client;
+  }, [config]);
 
-    return {
-      config,
-      apiClient,
-      clientApi,
-      socialNetworkApi,
-      postApi,
-      isLoading,
-      error,
-      setError,
-      selectedClient,
-      setSelectedClient,
-    };
-  }, [config, isLoading, error, selectedClient]);
+  // Create API instances - they only change when apiClient changes
+  const clientApi = useMemo(() => new ClientAPI(apiClient), [apiClient]);
+  const socialNetworkApi = useMemo(() => new SocialNetworkAPI(apiClient), [apiClient]);
+  const postApi = useMemo(() => new PostAPI(apiClient), [apiClient]);
+
+  // Context value - now with separate memo for stable references
+  const contextValue = useMemo(() => ({
+    config,
+    apiClient,
+    clientApi,
+    socialNetworkApi,
+    postApi,
+    isLoading,
+    error,
+    setError,
+    selectedClient,
+    setSelectedClient,
+  }), [config, apiClient, clientApi, socialNetworkApi, postApi, isLoading, error, selectedClient]);
 
   return (
     <BazzucaMediaContext.Provider value={contextValue}>

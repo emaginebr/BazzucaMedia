@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useBazzucaMedia } from '../contexts/BazzucaMediaContext';
+import { useBazzucaMedia } from '../contexts/BazzucaContext';
 import type { SocialNetworkInfo, SocialNetworkInput, SocialNetworkUpdate } from '../types/bazzuca';
 
 export interface UseSocialNetworksReturn {

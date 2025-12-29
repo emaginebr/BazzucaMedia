@@ -1,0 +1,10 @@
+# Ignorar todos os arquivos de certificado
+*.pfx
+*.key
+*.crt
+*.pem
+*.cer
+*.p12
+
+# Manter apenas o README
+!README.md

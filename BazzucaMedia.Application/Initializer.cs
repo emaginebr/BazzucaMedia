@@ -67,7 +67,7 @@ namespace BazzucaMedia.Application
 
 
                 services.AddAuthentication("BasicAuthentication")
-                    .AddScheme<AuthenticationSchemeOptions, RemoteAuthHandler>("BasicAuthentication", null);
+                    .AddScheme<AuthenticationSchemeOptions, NAuthHandler>("BasicAuthentication", null);
 
         }
     }

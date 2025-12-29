@@ -8,6 +8,7 @@ export const ROUTES = {
   PROFILE: '/profile',
   // BazzucaMedia Routes
   CLIENTS: '/clients',
+  CLIENT_NETWORKS: (id: number) => `/clients/${id}/networks`,
   POSTS: '/posts',
   POSTS_NEW: '/posts/new',
   POSTS_EDIT: (id: number) => `/posts/edit/${id}`,

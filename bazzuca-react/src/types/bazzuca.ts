@@ -68,7 +68,7 @@ export interface PostInfo {
 
 export interface ClientInput {
   name: string;
-  socialNetworks: SocialNetworkEnum[];
+  socialNetworks?: SocialNetworkEnum[];
 }
 
 export interface ClientUpdate extends ClientInput {

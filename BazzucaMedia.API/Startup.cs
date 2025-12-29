@@ -56,12 +56,9 @@ namespace BazzucaMedia.API
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
-                       .AllowAnyHeader();
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("*");
             }));
-            services.AddHttpsRedirection(options =>
-            {
-                options.HttpsPort = 443;
-            });
             services.Configure<FormOptions>(options =>
             {
                 options.MultipartBodyLengthLimit = 104857600; // 100 MB
@@ -84,11 +81,6 @@ namespace BazzucaMedia.API
                     //c.RoutePrefix = string.Empty;
                 });
             }
-            else
-            {
-                app.UseHttpsRedirection();
-            }
-
 
             app.UseHealthChecks("/",
                 new HealthCheckOptions()
@@ -108,6 +100,8 @@ namespace BazzucaMedia.API
                 });
 
             app.UseRouting();
+            
+            // CORS deve vir ANTES de Authentication e Authorization
             app.UseCors("MyPolicy");
 
             app.UseAuthentication();

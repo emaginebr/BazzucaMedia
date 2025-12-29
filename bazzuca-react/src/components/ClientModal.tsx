@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useClients } from '../hooks/useClients';
-import type { ClientInfo, SocialNetworkEnum } from '../types/bazzuca';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
+import type { ClientInfo } from '../types/bazzuca';
 
 export interface ClientModalProps {
   isOpen: boolean;
@@ -20,54 +9,26 @@ export interface ClientModalProps {
   onSave?: (client: ClientInfo) => void;
 }
 
-const SOCIAL_NETWORKS: { value: SocialNetworkEnum; label: string }[] = [
-  { value: 1, label: 'X (Twitter)' },
-  { value: 2, label: 'Instagram' },
-  { value: 3, label: 'Facebook' },
-  { value: 4, label: 'LinkedIn' },
-  { value: 5, label: 'TikTok' },
-  { value: 6, label: 'YouTube' },
-  { value: 7, label: 'WhatsApp' },
-  { value: 8, label: 'SMS' },
-  { value: 9, label: 'Email' },
-];
-
 export function ClientModal({ isOpen, onClose, client, onSave }: ClientModalProps) {
   const { createClient, updateClient } = useClients(false);
   const [name, setName] = useState('');
-  const [selectedNetworks, setSelectedNetworks] = useState<SocialNetworkEnum[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (client) {
       setName(client.name);
-      setSelectedNetworks(client.socialNetworks);
     } else {
       setName('');
-      setSelectedNetworks([]);
     }
     setError(null);
   }, [client, isOpen]);
-
-  const handleNetworkToggle = (network: SocialNetworkEnum) => {
-    setSelectedNetworks((prev) =>
-      prev.includes(network)
-        ? prev.filter((n) => n !== network)
-        : [...prev, network]
-    );
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name.trim()) {
       setError('Client name is required');
-      return;
-    }
-
-    if (selectedNetworks.length === 0) {
-      setError('Please select at least one social network');
       return;
     }
 
@@ -82,12 +43,11 @@ export function ClientModal({ isOpen, onClose, client, onSave }: ClientModalProp
           clientId: client.clientId,
           userId: client.userId,
           name: name.trim(),
-          socialNetworks: selectedNetworks,
+          socialNetworks: client.socialNetworks,
         });
       } else {
         result = await createClient({
           name: name.trim(),
-          socialNetworks: selectedNetworks,
         });
       }
 
@@ -104,70 +64,57 @@ export function ClientModal({ isOpen, onClose, client, onSave }: ClientModalProp
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{client ? 'Edit Client' : 'Create New Client'}</DialogTitle>
-          <DialogDescription>
-            {client
-              ? 'Update the client information below.'
-              : 'Enter the client name and select the social networks they use.'}
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 p-6 shadow-xl">
+        <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {client ? 'Edit Client' : 'Create New Client'}
+        </h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Client Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter client name"
-                disabled={loading}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Social Networks</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {SOCIAL_NETWORKS.map((network) => (
-                  <label
-                    key={network.value}
-                    className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedNetworks.includes(network.value)}
-                      onChange={() => handleNetworkToggle(network.value)}
-                      disabled={loading}
-                      className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm">{network.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {error && (
-              <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-              </div>
-            )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Client Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter client name"
+              disabled={loading}
+              required
+              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+          {error && (
+            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="rounded-md border border-gray-300 dark:border-gray-600 px-6 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+            >
               Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+            >
               {loading ? 'Saving...' : client ? 'Update' : 'Create'}
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

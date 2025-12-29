@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { Pencil, Trash2, Plus, Eye } from 'lucide-react';
 import { useClients } from '../hooks/useClients';
 import type { ClientInfo } from '../types/bazzuca';
 import { getSocialNetworkName } from '../types/bazzuca';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { ConfirmDialog } from './ConfirmDialog';
 import { cn } from '../utils/cn';
 
 export interface ClientListProps {
   onEdit?: (client: ClientInfo) => void;
   onDelete?: (clientId: number) => void;
   onCreate?: () => void;
+  onView?: (client: ClientInfo) => void;
   showCreateButton?: boolean;
   className?: string;
 }
@@ -20,22 +22,38 @@ export function ClientList({
   onEdit,
   onDelete,
   onCreate,
+  onView,
   showCreateButton = true,
   className,
 }: ClientListProps) {
   const { clients, loading, error, deleteClient } = useClients();
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<number | null>(null);
 
-  const handleDelete = async (clientId: number) => {
-    if (window.confirm('Are you sure you want to delete this client?')) {
-      setDeletingId(clientId);
-      const success = await deleteClient(clientId);
-      setDeletingId(null);
-      
-      if (success && onDelete) {
-        onDelete(clientId);
-      }
+  const handleDeleteClick = (clientId: number) => {
+    setClientToDelete(clientId);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (clientToDelete === null) return;
+    
+    setDeletingId(clientToDelete);
+    const success = await deleteClient(clientToDelete);
+    setDeletingId(null);
+    setShowDeleteDialog(false);
+    
+    if (success && onDelete) {
+      onDelete(clientToDelete);
     }
+    
+    setClientToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    setClientToDelete(null);
   };
 
   if (error) {
@@ -98,8 +116,19 @@ export function ClientList({
                       <Button
                         variant="ghost"
                         size="icon"
+                        onClick={() => onView?.(client)}
+                        disabled={deletingId === client.clientId}
+                        title="View networks"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => onEdit?.(client)}
                         disabled={deletingId === client.clientId}
+                        title="Edit client"
                       >
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
@@ -107,8 +136,9 @@ export function ClientList({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(client.clientId)}
+                        onClick={() => handleDeleteClick(client.clientId)}
                         disabled={deletingId === client.clientId}
+                        title="Delete client"
                       >
                         <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
                         <span className="sr-only">Delete</span>
@@ -121,6 +151,18 @@ export function ClientList({
           </Table>
         )}
       </CardContent>
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Client"
+        description="Are you sure you want to delete this client? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        loading={deletingId !== null}
+        variant="destructive"
+      />
     </Card>
   );
 }

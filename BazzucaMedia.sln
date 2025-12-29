@@ -39,6 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Extra", "5 - Extra", "{
 	ProjectSection(SolutionItems) = preProject
 		bazzuca-media.sql = bazzuca-media.sql
 		createContext.bat = createContext.bat
+		generate-cert.ps1 = generate-cert.ps1
 		README.md = README.md
 		update-nauth.ps1 = update-nauth.ps1
 		update-ntools.ps1 = update-ntools.ps1

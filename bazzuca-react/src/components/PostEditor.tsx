@@ -6,7 +6,6 @@ import type { PostInfo, PostInput, PostTypeEnum, PostStatusEnum } from '../types
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 export interface PostEditorProps {
@@ -166,42 +165,38 @@ export function PostEditor({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="client">Client</Label>
-              <Select
-                value={formData.clientId?.toString()}
-                onValueChange={handleClientChange}
+              <select
+                id="client"
+                value={formData.clientId?.toString() || ''}
+                onChange={(e) => handleClientChange(e.target.value)}
                 disabled={loading}
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <SelectTrigger id="client">
-                  <SelectValue placeholder="Select a client" />
-                </SelectTrigger>
-                <SelectContent>
-                  {clients.map((client) => (
-                    <SelectItem key={client.clientId} value={client.clientId.toString()}>
-                      {client.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <option value="">Select a client</option>
+                {clients.map((client) => (
+                  <option key={client.clientId} value={client.clientId.toString()}>
+                    {client.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="network">Social Network</Label>
-              <Select
-                value={formData.networkId?.toString()}
-                onValueChange={(value) => handleChange('networkId', Number(value))}
+              <select
+                id="network"
+                value={formData.networkId?.toString() || ''}
+                onChange={(e) => handleChange('networkId', e.target.value ? Number(e.target.value) : undefined)}
                 disabled={loading || !selectedClientId}
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <SelectTrigger id="network">
-                  <SelectValue placeholder="Select a network" />
-                </SelectTrigger>
-                <SelectContent>
-                  {networks.map((network) => (
-                    <SelectItem key={network.networkId} value={network.networkId.toString()}>
-                      {network.user} ({network.url})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <option value="">Select a network</option>
+                {networks.map((network) => (
+                  <option key={network.networkId} value={network.networkId.toString()}>
+                    {network.user} ({network.url})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -269,42 +264,36 @@ export function PostEditor({
 
             <div className="space-y-2">
               <Label htmlFor="postType">Post Type</Label>
-              <Select
+              <select
+                id="postType"
                 value={formData.postType?.toString()}
-                onValueChange={(value) => handleChange('postType', Number(value))}
+                onChange={(e) => handleChange('postType', Number(e.target.value))}
                 disabled={loading}
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <SelectTrigger id="postType">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {POST_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value.toString()}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {POST_TYPES.map((type) => (
+                  <option key={type.value} value={type.value.toString()}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select
+              <select
+                id="status"
                 value={formData.status?.toString()}
-                onValueChange={(value) => handleChange('status', Number(value))}
+                onChange={(e) => handleChange('status', Number(e.target.value))}
                 disabled={loading}
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <SelectTrigger id="status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {POST_STATUSES.map((status) => (
-                    <SelectItem key={status.value} value={status.value.toString()}>
-                      {status.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {POST_STATUSES.map((status) => (
+                  <option key={status.value} value={status.value.toString()}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

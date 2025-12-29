@@ -46,8 +46,6 @@ COPY --from=publish /app/publish .
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080;https://+:8443
 ENV ASPNETCORE_ENVIRONMENT=Docker
-ENV CERTIFICATE_PATH="/app/certs/certificate.pfx"
-ENV CERTIFICATE_PASSWORD="pikpro6"
 
 # Run the application
 ENTRYPOINT ["dotnet", "BazzucaMedia.API.dll"]
