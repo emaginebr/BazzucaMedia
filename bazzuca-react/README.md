@@ -1,6 +1,6 @@
-# BazzucaMedia React Components
+# Bazzuca React Components
 
-React component library for the BazzucaMedia social media management system. Built with TypeScript, React, and Tailwind CSS.
+React component library for the Bazzuca social media management system. Built with TypeScript, React, and Tailwind CSS.
 
 [![npm version](https://img.shields.io/npm/v/bazzuca-react.svg)](https://www.npmjs.com/package/bazzuca-react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -38,15 +38,15 @@ npm install react react-dom axios date-fns lucide-react
 
 ### 1. Setup Provider
 
-Wrap your app with the `BazzucaMediaProvider`:
+Wrap your app with the `BazzucaProvider`:
 
 ```tsx
-import { BazzucaMediaProvider } from 'bazzuca-react';
+import { BazzucaProvider } from 'bazzuca-react';
 import 'bazzuca-react/styles';
 
 function App() {
   return (
-    <BazzucaMediaProvider
+    <BazzucaProvider
       config={{
         apiUrl: 'https://api.yourdomain.com',
         timeout: 30000,
@@ -59,7 +59,7 @@ function App() {
       }}
     >
       <YourApp />
-    </BazzucaMediaProvider>
+    </BazzucaProvider>
   );
 }
 ```
@@ -293,10 +293,10 @@ function MyComponent() {
 Direct API access for advanced use cases:
 
 ```tsx
-import { useBazzucaMedia } from 'bazzuca-react';
+import { useBazzuca } from 'bazzuca-react';
 
 function MyComponent() {
-  const { clientApi, socialNetworkApi, postApi } = useBazzucaMedia();
+  const { clientApi, socialNetworkApi, postApi } = useBazzuca();
 
   // Direct API calls
   const clients = await clientApi.listClients();
@@ -394,10 +394,10 @@ module.exports = {
 
 ## Configuration
 
-### BazzucaMediaConfig
+### BazzucaConfig
 
 ```typescript
-interface BazzucaMediaConfig {
+interface BazzucaConfig {
   apiUrl: string;              // Base API URL
   timeout?: number;            // Request timeout (default: 30000ms)
   headers?: Record<string, string>; // Custom headers (e.g., Authorization)
@@ -410,7 +410,7 @@ interface BazzucaMediaConfig {
 Pass authentication tokens via headers:
 
 ```tsx
-<BazzucaMediaProvider
+<BazzucaProvider
   config={{
     apiUrl: 'https://api.yourdomain.com',
     headers: {
@@ -419,7 +419,7 @@ Pass authentication tokens via headers:
   }}
 >
   {children}
-</BazzucaMediaProvider>
+</BazzucaProvider>
 ```
 
 ## Advanced Usage
@@ -427,7 +427,7 @@ Pass authentication tokens via headers:
 ### Custom Error Handling
 
 ```tsx
-<BazzucaMediaProvider
+<BazzucaProvider
   config={{
     apiUrl: API_URL,
     onError: (error) => {
@@ -438,13 +438,13 @@ Pass authentication tokens via headers:
   }}
 >
   {children}
-</BazzucaMediaProvider>
+</BazzucaProvider>
 ```
 
 ### Context Access
 
 ```tsx
-import { useBazzucaMedia } from 'bazzuca-react';
+import { useBazzuca } from 'bazzuca-react';
 
 function MyComponent() {
   const {
@@ -454,7 +454,7 @@ function MyComponent() {
     setError,
     selectedClient,
     setSelectedClient,
-  } = useBazzucaMedia();
+  } = useBazzuca();
 
   return <div>{/* Your component */}</div>;
 }

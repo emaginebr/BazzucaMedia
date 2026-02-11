@@ -1,7 +1,7 @@
 {
   "name": "bazzuca-react",
   "version": "0.1.0",
-  "description": "React components for BazzucaMedia social media management system",
+  "description": "React components for Bazzuca social media management system",
   "author": "Rodrigo Landim",
   "license": "MIT",
   "type": "module",
@@ -52,12 +52,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/landim32/BazzucaMedia/tree/main/bazzuca-react"
+    "url": "https://github.com/landim32/Bazzuca/tree/main/bazzuca-react"
   },
   "bugs": {
-    "url": "https://github.com/landim32/BazzucaMedia/issues"
+    "url": "https://github.com/landim32/Bazzuca/issues"
   },
-  "homepage": "https://github.com/landim32/BazzucaMedia/tree/main/bazzuca-react#readme",
+  "homepage": "https://github.com/landim32/Bazzuca/tree/main/bazzuca-react#readme",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

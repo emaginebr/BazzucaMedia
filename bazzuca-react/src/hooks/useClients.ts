@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useBazzucaMedia } from '../contexts/BazzucaContext';
+import { useBazzuca } from '../contexts/BazzucaContext';
 import type { ClientInfo, ClientInput, ClientUpdate } from '../types/bazzuca';
 
 export interface UseClientsReturn {
@@ -15,7 +15,7 @@ export interface UseClientsReturn {
 }
 
 export function useClients(autoFetch: boolean = true): UseClientsReturn {
-  const { clientApi } = useBazzucaMedia();
+  const { clientApi } = useBazzuca();
   const [clients, setClients] = useState<ClientInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

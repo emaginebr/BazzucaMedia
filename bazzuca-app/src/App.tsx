@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { NAuthProvider, useAuth } from 'nauth-react';
-import { BazzucaMediaProvider } from 'bazzuca-react';
+import { BazzucaProvider } from 'bazzuca-react';
 import { Toaster } from 'sonner';
 //import 'bazzuca-react/styles';
 import { Layout } from './components/Layout';
@@ -31,7 +31,7 @@ function AppContent() {
   }), [token]);
 
   return (
-    <BazzucaMediaProvider config={bazzucaConfig}>
+    <BazzucaProvider config={bazzucaConfig}>
           <Toaster position="bottom-right" richColors />
       <Routes>
         <Route element={<Layout />}>
@@ -117,7 +117,7 @@ function AppContent() {
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Route>
       </Routes>
-        </BazzucaMediaProvider>
+        </BazzucaProvider>
   );
 }
 

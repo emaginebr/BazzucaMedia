@@ -1,6 +1,6 @@
 # Certificados SSL/TLS
 
-Este diretório contém os certificados SSL/TLS para a aplicação BazzucaMedia API.
+Este diretï¿½rio contï¿½m os certificados SSL/TLS para a aplicaï¿½ï¿½o Bazzuca API.
 
 ## Gerando um Certificado para Desenvolvimento
 
@@ -30,7 +30,7 @@ $cert = New-SelfSignedCertificate `
     -KeyLength 4096 `
     -NotAfter (Get-Date).AddYears(1) `
     -CertStoreLocation "Cert:\CurrentUser\My" `
-    -FriendlyName "BazzucaMedia Development Certificate" `
+    -FriendlyName "Bazzuca Development Certificate" `
     -HashAlgorithm SHA256 `
     -KeyUsage DigitalSignature, KeyEncipherment, DataEncipherment `
     -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.1")
@@ -51,12 +51,12 @@ Remove-Item -Path "Cert:\CurrentUser\My\$($cert.Thumbprint)"
 dotnet dev-certs https -ep ./certs/certificate.pfx -p pikpro6 --trust
 ```
 
-## Configuração
+## Configuraï¿½ï¿½o
 
-Após gerar o certificado, certifique-se de que:
+Apï¿½s gerar o certificado, certifique-se de que:
 
-1. O arquivo `certificate.pfx` está neste diretório (`./certs/`)
-2. As variáveis de ambiente no arquivo `.env` estão configuradas corretamente:
+1. O arquivo `certificate.pfx` estï¿½ neste diretï¿½rio (`./certs/`)
+2. As variï¿½veis de ambiente no arquivo `.env` estï¿½o configuradas corretamente:
 
 ```env
 CERTIFICATE_PATH=/app/certs/certificate.pfx
@@ -64,18 +64,18 @@ CERTIFICATE_PASSWORD=pikpro6
 CERTIFICATE_DIRECTORY=./certs
 ```
 
-## Para Produção
+## Para Produï¿½ï¿½o
 
-?? **IMPORTANTE**: Nunca use certificados autoassinados em produção!
+?? **IMPORTANTE**: Nunca use certificados autoassinados em produï¿½ï¿½o!
 
-Para produção, você deve:
-1. Obter um certificado válido de uma Autoridade Certificadora (CA) como Let's Encrypt, DigiCert, etc.
+Para produï¿½ï¿½o, vocï¿½ deve:
+1. Obter um certificado vï¿½lido de uma Autoridade Certificadora (CA) como Let's Encrypt, DigiCert, etc.
 2. Armazenar o certificado de forma segura (Azure Key Vault, AWS Secrets Manager, etc.)
-3. Atualizar as variáveis de ambiente com o caminho e senha corretos
+3. Atualizar as variï¿½veis de ambiente com o caminho e senha corretos
 
-## Segurança
+## Seguranï¿½a
 
-- **NÃO** faça commit de arquivos `.pfx`, `.key`, ou `.crt` no repositório
-- O arquivo `.gitignore` já está configurado para ignorar estes arquivos
-- Sempre use senhas fortes em produção
+- **Nï¿½O** faï¿½a commit de arquivos `.pfx`, `.key`, ou `.crt` no repositï¿½rio
+- O arquivo `.gitignore` jï¿½ estï¿½ configurado para ignorar estes arquivos
+- Sempre use senhas fortes em produï¿½ï¿½o
 - Rotacione certificados regularmente (recomendado a cada 90 dias)

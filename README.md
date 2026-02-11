@@ -1,18 +1,18 @@
 # BazzucaSocial
 
-Sistema de gerenciamento de mídia social para múltiplos clientes e redes sociais.
+Sistema de gerenciamento de mï¿½dia social para mï¿½ltiplos clientes e redes sociais.
 
-## ?? Configuração Rápida
+## ?? Configuraï¿½ï¿½o Rï¿½pida
 
-### Pré-requisitos
+### Prï¿½-requisitos
 
 - Docker e Docker Compose
 - .NET 8 SDK (para desenvolvimento local)
 - Node.js (para desenvolvimento local do frontend)
 
-### Configuração do Certificado SSL
+### Configuraï¿½ï¿½o do Certificado SSL
 
-Antes de executar a aplicação com HTTPS, você precisa gerar um certificado SSL:
+Antes de executar a aplicaï¿½ï¿½o com HTTPS, vocï¿½ precisa gerar um certificado SSL:
 
 #### No Windows (PowerShell)
 
@@ -27,9 +27,9 @@ chmod +x generate-cert.sh
 ./generate-cert.sh
 ```
 
-O certificado será gerado automaticamente no diretório `./certs/` com a senha configurada no arquivo `.env`.
+O certificado serï¿½ gerado automaticamente no diretï¿½rio `./certs/` com a senha configurada no arquivo `.env`.
 
-Caso deseje configurar um certificado existente, defina as variáveis abaixo no arquivo `.env`:
+Caso deseje configurar um certificado existente, defina as variï¿½veis abaixo no arquivo `.env`:
 
 ```env
 # Caminho e senha do certificado existente
@@ -40,24 +40,24 @@ CERTIFICATE_PASSWORD=sua_senha
 ### Executar com Docker
 
 ```bash
-# Iniciar todos os serviços
+# Iniciar todos os serviï¿½os
 docker-compose up -d
 
 # Ver logs
 docker-compose logs -f bazzuca-api
 
-# Parar serviços
+# Parar serviï¿½os
 docker-compose down
 ```
 
-A API estará disponível em:
+A API estarï¿½ disponï¿½vel em:
 
 - HTTP: http://localhost:5010
 - HTTPS: https://localhost:5011
 
-### Variáveis de Ambiente
+### Variï¿½veis de Ambiente
 
-Todas as configurações estão no arquivo `.env`:
+Todas as configuraï¿½ï¿½es estï¿½o no arquivo `.env`:
 
 ```env
 # Certificado SSL
@@ -69,38 +69,38 @@ CERTIFICATE_DIRECTORY=./certs
 API_HTTP_PORT=5010
 API_HTTPS_PORT=5011
 
-# Outras configurações...
+# Outras configuraï¿½ï¿½es...
 ```
 
 ## ?? Notas sobre HTTPS
 
 - Em **desenvolvimento**: Use certificados autoassinados (gerados pelos scripts)
-- Em **produção**: Use certificados válidos de uma CA (Let's Encrypt, etc.)
-- Se o certificado não for encontrado, a aplicação funcionará apenas em HTTP
-- Nunca faça commit de arquivos de certificado no repositório
+- Em **produï¿½ï¿½o**: Use certificados vï¿½lidos de uma CA (Let's Encrypt, etc.)
+- Se o certificado nï¿½o for encontrado, a aplicaï¿½ï¿½o funcionarï¿½ apenas em HTTP
+- Nunca faï¿½a commit de arquivos de certificado no repositï¿½rio
 
 ## ?? Desenvolvimento Local
 
 Para executar sem Docker:
 
 ```bash
-cd BazzucaMedia.API
+cd Bazzuca.API
 dotnet run
 ```
 
-## ?? Documentação da API
+## ?? Documentaï¿½ï¿½o da API
 
-Com a aplicação em execução, acesse:
+Com a aplicaï¿½ï¿½o em execuï¿½ï¿½o, acesse:
 
 - Swagger UI: http://localhost:5010/swagger
 
 ## ?? Docker
 
-A aplicação suporta HTTPS através de certificados montados via volume. O certificado deve estar no diretório `./certs/` conforme configurado no `.env`.
+A aplicaï¿½ï¿½o suporta HTTPS atravï¿½s de certificados montados via volume. O certificado deve estar no diretï¿½rio `./certs/` conforme configurado no `.env`.
 
-## ?? Segurança
+## ?? Seguranï¿½a
 
-- Sempre use HTTPS em produção
-- Nunca exponha senhas ou certificados no código
-- Use Azure Key Vault ou AWS Secrets Manager para produção
+- Sempre use HTTPS em produï¿½ï¿½o
+- Nunca exponha senhas ou certificados no cï¿½digo
+- Use Azure Key Vault ou AWS Secrets Manager para produï¿½ï¿½o
 - Rotacione certificados regularmente

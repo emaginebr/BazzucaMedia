@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: BazzucaAPI.Dockerfile
-    image: bazzucamedia-bazzuca-api:latest
+    image: Bazzuca-bazzuca-api:latest
     container_name: bazzuca-api
     restart: unless-stopped
     depends_on:
@@ -65,7 +65,7 @@ services:
         - VITE_API_URL=${VITE_API_URL:-http://localhost:5004}
         - VITE_BAZZUCA_API_URL=${VITE_BAZZUCA_API_URL:-https://localhost:5011}
         - NODE_ENV=${NODE_ENV:-development}
-    image: bazzucamedia-bazzuca-app:latest
+    image: Bazzuca-bazzuca-app:latest
     container_name: bazzuca-app
     restart: unless-stopped
     depends_on:

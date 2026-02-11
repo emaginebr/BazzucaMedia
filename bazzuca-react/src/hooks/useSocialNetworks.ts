@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useBazzucaMedia } from '../contexts/BazzucaContext';
+import { useBazzuca } from '../contexts/BazzucaContext';
 import type { SocialNetworkInfo, SocialNetworkInput, SocialNetworkUpdate } from '../types/bazzuca';
 
 export interface UseSocialNetworksReturn {
@@ -15,7 +15,7 @@ export interface UseSocialNetworksReturn {
 }
 
 export function useSocialNetworks(clientId: number, autoFetch: boolean = true): UseSocialNetworksReturn {
-  const { socialNetworkApi } = useBazzucaMedia();
+  const { socialNetworkApi } = useBazzuca();
   const [networks, setNetworks] = useState<SocialNetworkInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

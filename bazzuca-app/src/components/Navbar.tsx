@@ -49,7 +49,7 @@ export function Navbar() {
                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     <MessageSquare className="w-4 h-4" />
-                    BazzucaMedia
+                    Bazzuca
                     <ChevronDown className={`w-4 h-4 transition-transform ${bazzucaMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
                   

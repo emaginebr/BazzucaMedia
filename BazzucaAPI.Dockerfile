@@ -3,26 +3,26 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
-COPY ["BazzucaMedia.API/BazzucaMedia.API.csproj", "BazzucaMedia.API/"]
-COPY ["BazzucaMedia.Application/BazzucaMedia.Application.csproj", "BazzucaMedia.Application/"]
-COPY ["BazzucaMedia.Domain/BazzucaMedia.Domain.csproj", "BazzucaMedia.Domain/"]
-COPY ["BazzucaMedia.DTO/BazzucaMedia.DTO.csproj", "BazzucaMedia.DTO/"]
-COPY ["BazzucaMedia.Infra/BazzucaMedia.Infra.csproj", "BazzucaMedia.Infra/"]
-COPY ["BazzucaMedia.Infra.Interface/BazzucaMedia.Infra.Interface.csproj", "BazzucaMedia.Infra.Interface/"]
+COPY ["Bazzuca.API/Bazzuca.API.csproj", "Bazzuca.API/"]
+COPY ["Bazzuca.Application/Bazzuca.Application.csproj", "Bazzuca.Application/"]
+COPY ["Bazzuca.Domain/Bazzuca.Domain.csproj", "Bazzuca.Domain/"]
+COPY ["Bazzuca.DTO/Bazzuca.DTO.csproj", "Bazzuca.DTO/"]
+COPY ["Bazzuca.Infra/Bazzuca.Infra.csproj", "Bazzuca.Infra/"]
+COPY ["Bazzuca.Infra.Interface/Bazzuca.Infra.Interface.csproj", "Bazzuca.Infra.Interface/"]
 
 # Restore dependencies
-RUN dotnet restore "BazzucaMedia.API/BazzucaMedia.API.csproj"
+RUN dotnet restore "Bazzuca.API/Bazzuca.API.csproj"
 
 # Copy all source files
 COPY . .
 
 # Build the application
-WORKDIR "/src/BazzucaMedia.API"
-RUN dotnet build "BazzucaMedia.API.csproj" -c Release -o /app/build
+WORKDIR "/src/Bazzuca.API"
+RUN dotnet build "Bazzuca.API.csproj" -c Release -o /app/build
 
 # Stage 2: Publish
 FROM build AS publish
-RUN dotnet publish "BazzucaMedia.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Bazzuca.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage 3: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -48,4 +48,4 @@ ENV ASPNETCORE_URLS=http://+:8080;https://+:8443
 ENV ASPNETCORE_ENVIRONMENT=Docker
 
 # Run the application
-ENTRYPOINT ["dotnet", "BazzucaMedia.API.dll"]
+ENTRYPOINT ["dotnet", "Bazzuca.API.dll"]

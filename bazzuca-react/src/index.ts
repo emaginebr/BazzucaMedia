@@ -3,7 +3,7 @@
 // Styles - Import first
 import './styles/index.css';
 
-// BazzucaMedia Components - Clients
+// Bazzuca Components - Clients
 export { ClientList } from './components/ClientList';
 export { ClientModal } from './components/ClientModal';
 export { ConfirmDialog } from './components/ConfirmDialog';
@@ -11,13 +11,13 @@ export type { ClientListProps } from './components/ClientList';
 export type { ClientModalProps } from './components/ClientModal';
 export type { ConfirmDialogProps } from './components/ConfirmDialog';
 
-// BazzucaMedia Components - Social Networks
+// Bazzuca Components - Social Networks
 export { SocialNetworkList } from './components/SocialNetworkList';
 export { SocialNetworkModal } from './components/SocialNetworkModal';
 export type { SocialNetworkListProps } from './components/SocialNetworkList';
 export type { SocialNetworkModalProps } from './components/SocialNetworkModal';
 
-// BazzucaMedia Components - Posts
+// Bazzuca Components - Posts
 export { PostList } from './components/PostList';
 export { PostEditor } from './components/PostEditor';
 export { PostViewer } from './components/PostViewer';
@@ -28,10 +28,10 @@ export type { PostViewerProps } from './components/PostViewer';
 export type { PostCalendarProps } from './components/PostCalendar';
 
 // Context Providers & Hooks
-export { BazzucaMediaProvider, useBazzucaMedia } from './contexts/BazzucaContext';
-export type { BazzucaMediaContextValue, BazzucaMediaProviderProps } from './contexts/BazzucaContext';
+export { BazzucaProvider, useBazzuca } from './contexts/BazzucaContext';
+export type { BazzucaContextValue, BazzucaProviderProps } from './contexts/BazzucaContext';
 
-// Custom Hooks - BazzucaMedia
+// Custom Hooks - Bazzuca
 export { useClients } from './hooks/useClients';
 export type { UseClientsReturn } from './hooks/useClients';
 export { useSocialNetworks } from './hooks/useSocialNetworks';
@@ -52,9 +52,9 @@ export { Avatar, AvatarImage, AvatarFallback } from './components/ui/avatar';
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './components/ui/card';
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from './components/ui/table';
 
-// BazzucaMedia Types
+// Bazzuca Types
 export type {
-  BazzucaMediaConfig,
+  BazzucaConfig,
   ClientInfo,
   ClientInput,
   ClientUpdate,
@@ -68,14 +68,14 @@ export type {
   PostListPaged,
 } from './types/bazzuca';
 
-// BazzucaMedia Enums
+// Bazzuca Enums
 export {
   SocialNetworkEnum,
   PostTypeEnum,
   PostStatusEnum,
 } from './types/bazzuca';
 
-// BazzucaMedia Utility Functions
+// Bazzuca Utility Functions
 export {
   getSocialNetworkName,
   getPostTypeName,

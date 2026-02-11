@@ -399,7 +399,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/BazzucaMedia.API/appsettings.Development.json
-/BazzucaMedia.API/appsettings.Docker.json
-/BazzucaMedia.API/*.pfx
+/Bazzuca.API/appsettings.Development.json
+/Bazzuca.API/appsettings.Docker.json
+/Bazzuca.API/*.pfx
 /createContext.bat

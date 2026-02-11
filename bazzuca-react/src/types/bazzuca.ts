@@ -125,7 +125,7 @@ export interface PostListPaged {
 // Configuration
 // ============================================================================
 
-export interface BazzucaMediaConfig {
+export interface BazzucaConfig {
   apiUrl: string;
   timeout?: number;
   headers?: Record<string, string>;

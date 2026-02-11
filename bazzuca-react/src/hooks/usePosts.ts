@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useBazzucaMedia } from '../contexts/BazzucaContext';
+import { useBazzuca } from '../contexts/BazzucaContext';
 import type { PostInfo, PostInput, PostUpdate, PostSearchParam, PostListPaged } from '../types/bazzuca';
 
 export interface UsePostsReturn {
@@ -17,7 +17,7 @@ export interface UsePostsReturn {
 }
 
 export function usePosts(month?: number, year?: number, autoFetch: boolean = false): UsePostsReturn {
-  const { postApi } = useBazzucaMedia();
+  const { postApi } = useBazzuca();
   const [posts, setPosts] = useState<PostInfo[]>([]);
   const [pagedPosts, setPagedPosts] = useState<PostListPaged | null>(null);
   const [loading, setLoading] = useState(false);

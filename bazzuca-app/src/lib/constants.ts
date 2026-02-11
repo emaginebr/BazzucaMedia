@@ -1,4 +1,4 @@
-export const APP_NAME = 'BazzucaMedia';
+export const APP_NAME = 'Bazzuca';
 export const APP_DESCRIPTION = 'Social media management system powered by bazzuca-react';
 
 export const ROUTES = {
@@ -6,7 +6,7 @@ export const ROUTES = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
-  // BazzucaMedia Routes
+  // Bazzuca Routes
   CLIENTS: '/clients',
   CLIENT_NETWORKS: (id: number) => `/clients/${id}/networks`,
   POSTS: '/posts',
@@ -19,5 +19,5 @@ export const ROUTES = {
 export const EXTERNAL_LINKS = {
   TERMS: '/terms',
   PRIVACY: '/privacy',
-  DOCS: 'https://github.com/landim32/BazzucaMedia',
+  DOCS: 'https://github.com/landim32/Bazzuca',
 } as const;

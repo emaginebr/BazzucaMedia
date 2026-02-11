@@ -3,10 +3,10 @@ import axios, { type AxiosInstance } from 'axios';
 import { ClientAPI } from '../services/client-api';
 import { SocialNetworkAPI } from '../services/social-network-api';
 import { PostAPI } from '../services/post-api';
-import type { BazzucaMediaConfig, ClientInfo } from '../types/bazzuca';
+import type { BazzucaConfig, ClientInfo } from '../types/bazzuca';
 
-export interface BazzucaMediaContextValue {
-  config: BazzucaMediaConfig;
+export interface BazzucaContextValue {
+  config: BazzucaConfig;
   apiClient: AxiosInstance;
   clientApi: ClientAPI;
   socialNetworkApi: SocialNetworkAPI;
@@ -18,14 +18,14 @@ export interface BazzucaMediaContextValue {
   setSelectedClient: (client?: ClientInfo) => void;
 }
 
-const BazzucaMediaContext = createContext<BazzucaMediaContextValue | undefined>(undefined);
+const BazzucaContext = createContext<BazzucaContextValue | undefined>(undefined);
 
-export interface BazzucaMediaProviderProps {
-  config: BazzucaMediaConfig;
+export interface BazzucaProviderProps {
+  config: BazzucaConfig;
   children: React.ReactNode;
 }
 
-export function BazzucaMediaProvider({ config, children }: BazzucaMediaProviderProps) {
+export function BazzucaProvider({ config, children }: BazzucaProviderProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [selectedClient, setSelectedClient] = useState<ClientInfo | undefined>(undefined);
@@ -98,17 +98,17 @@ export function BazzucaMediaProvider({ config, children }: BazzucaMediaProviderP
   }), [config, apiClient, clientApi, socialNetworkApi, postApi, isLoading, error, selectedClient]);
 
   return (
-    <BazzucaMediaContext.Provider value={contextValue}>
+    <BazzucaContext.Provider value={contextValue}>
       {children}
-    </BazzucaMediaContext.Provider>
+    </BazzucaContext.Provider>
   );
 }
 
-export function useBazzucaMedia(): BazzucaMediaContextValue {
-  const context = useContext(BazzucaMediaContext);
+export function useBazzuca(): BazzucaContextValue {
+  const context = useContext(BazzucaContext);
   
   if (!context) {
-    throw new Error('useBazzucaMedia must be used within a BazzucaMediaProvider');
+    throw new Error('useBazzuca must be used within a BazzucaProvider');
   }
   
   return context;

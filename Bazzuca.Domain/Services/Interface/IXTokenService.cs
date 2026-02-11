@@ -1,0 +1,17 @@
+using Bazzuca.DTO.SocialNetwork;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bazzuca.Domain.Interface.Services
+{
+    public interface IXTokenService
+    {
+        Task<OAuthTokenInfo> GetRequestTokenAsync();
+        string GetAuthorizeUrl(string oauthToken);
+        Task<OAuthTokenInfo> GetAccessTokenAsync(string oauthToken, string oauthVerifier);
+        Task<OAuthTokenInfo> RunUserAuthorizationFlowAsync();
+    }
+}
