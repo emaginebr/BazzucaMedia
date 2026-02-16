@@ -11,11 +11,7 @@
     <Content Remove="DTOs\**" />
     <EmbeddedResource Remove="DTOs\**" />
     <None Remove="DTOs\**" />
-    <None Remove="bazzuca.pfx" />
     <None Remove="DTO\" />
-    <None Remove="Bazzuca.com.pfx" />
-    <None Remove="emagine.pfx" />
-    <None Remove="nochainswap.org.pfx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,11 +31,7 @@
     <Compile Remove="Controllers\OriginalController.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="bazzuca.pfx" />
-  </ItemGroup>
-
-  <ItemGroup>
+<ItemGroup>
     <Reference Include="NAuth.ACL">
       <HintPath>..\Lib\NAuth.ACL.dll</HintPath>
     </Reference>

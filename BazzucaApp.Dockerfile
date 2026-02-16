@@ -1,4 +1,17 @@
-# Stage 1: Build
+# Stage 1: Build bazzuca-react dependency
+FROM node:20-alpine AS build-lib
+
+WORKDIR /lib
+
+# Copy bazzuca-react package files and install dependencies
+COPY bazzuca-react/package*.json ./
+RUN npm install --legacy-peer-deps
+
+# Copy bazzuca-react source and build
+COPY bazzuca-react/ ./
+RUN npm run build
+
+# Stage 2: Build bazzuca-app
 FROM node:20-alpine AS build
 
 WORKDIR /app
@@ -6,8 +19,12 @@ WORKDIR /app
 # Copy package files
 COPY bazzuca-app/package*.json ./
 
-# Install dependencies with legacy peer deps to resolve React version conflicts
-RUN npm install --legacy-peer-deps
+# Copy the built bazzuca-react library
+COPY --from=build-lib /lib /lib/bazzuca-react
+
+# Override bazzuca-react to use the local build, then install
+RUN npm pkg set dependencies.bazzuca-react=file:/lib/bazzuca-react && \
+    npm install --legacy-peer-deps
 
 # Copy source code
 COPY bazzuca-app/ ./
@@ -24,7 +41,7 @@ ENV NODE_ENV=${NODE_ENV}
 # Build the application (skip TypeScript type checking)
 RUN npx vite build
 
-# Stage 2: Production
+# Stage 3: Production
 FROM nginx:alpine AS production
 
 # Copy custom nginx config
