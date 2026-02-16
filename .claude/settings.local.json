@@ -5,7 +5,9 @@
       "Bash(powershell -File:*)",
       "Bash(powershell -ExecutionPolicy Bypass -File rename-project.ps1:*)",
       "Bash(dotnet build:*)",
-      "Bash(del \"C:\\\\repos\\\\BazzucaMedia\\\\rename-project.ps1\")"
+      "Bash(del \"C:\\\\repos\\\\BazzucaMedia\\\\rename-project.ps1\")",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet add:*)"
     ]
   }
 }
