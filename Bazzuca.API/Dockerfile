@@ -19,7 +19,6 @@ RUN make install
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["Bazzuca.API/bazzuca.pfx", "Bazzuca.API/"]
 COPY ["Bazzuca.API/Bazzuca.API.csproj", "Bazzuca.API/"]
 COPY ["Bazzuca.Application/Bazzuca.Application.csproj", "Bazzuca.Application/"]
 COPY ["Bazzuca.Domain/Bazzuca.Domain.csproj", "Bazzuca.Domain/"]
