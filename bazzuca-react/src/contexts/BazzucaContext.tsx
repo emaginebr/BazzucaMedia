@@ -31,8 +31,9 @@ export function BazzucaProvider({ config, children }: BazzucaProviderProps) {
   const [selectedClient, setSelectedClient] = useState<ClientInfo | undefined>(undefined);
 
   // Create API client only when config changes
+  // If an external apiClient is provided, use it (with interceptors added)
   const apiClient = useMemo(() => {
-    const client = axios.create({
+    const client = config.apiClient || axios.create({
       baseURL: config.apiUrl,
       timeout: config.timeout || 30000,
       headers: {
@@ -43,9 +44,9 @@ export function BazzucaProvider({ config, children }: BazzucaProviderProps) {
 
     // Add request interceptor for loading state
     client.interceptors.request.use(
-      (config) => {
+      (reqConfig) => {
         setIsLoading(true);
-        return config;
+        return reqConfig;
       },
       (error) => {
         setIsLoading(false);
@@ -61,16 +62,16 @@ export function BazzucaProvider({ config, children }: BazzucaProviderProps) {
       },
       (error) => {
         setIsLoading(false);
-        const errorObj = error.response?.data?.message 
+        const errorObj = error.response?.data?.message
           ? new Error(error.response.data.message)
           : new Error(error.message || 'An error occurred');
-        
+
         setError(errorObj);
-        
+
         if (config.onError) {
           config.onError(errorObj);
         }
-        
+
         return Promise.reject(error);
       }
     );

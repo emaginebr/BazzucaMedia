@@ -16,6 +16,9 @@ RUN dotnet restore "Bazzuca.API/Bazzuca.API.csproj"
 # Copy all source files
 COPY . .
 
+# Generate a dummy certificate for build (the .pfx is gitignored)
+RUN dotnet dev-certs https -ep /src/Bazzuca.API/bazzuca.pfx -p dummy
+
 # Build the application
 WORKDIR "/src/Bazzuca.API"
 RUN dotnet build "Bazzuca.API.csproj" -c Release -o /app/build

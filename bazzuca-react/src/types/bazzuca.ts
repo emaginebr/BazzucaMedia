@@ -127,6 +127,7 @@ export interface PostListPaged {
 
 export interface BazzucaConfig {
   apiUrl: string;
+  apiClient?: import('axios').AxiosInstance;
   timeout?: number;
   headers?: Record<string, string>;
   onError?: (error: Error) => void;
