@@ -23,6 +23,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
+    <PackageReference Include="zTools" Version="*" />
+    <PackageReference Include="NAuth" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,18 +37,4 @@
     <Compile Remove="Controllers\OriginalController.cs" />
   </ItemGroup>
 
-<ItemGroup>
-    <Reference Include="NAuth.ACL">
-      <HintPath>..\Lib\NAuth.ACL.dll</HintPath>
-    </Reference>
-    <Reference Include="NAuth.DTO">
-      <HintPath>..\Lib\NAuth.DTO.dll</HintPath>
-    </Reference>
-    <Reference Include="NTools.ACL">
-      <HintPath>..\Lib\NTools.ACL.dll</HintPath>
-    </Reference>
-    <Reference Include="NTools.DTO">
-      <HintPath>..\Lib\NTools.DTO.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

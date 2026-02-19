@@ -24,8 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="NAuth.ACL">
-      <HintPath>..\Lib\NAuth.ACL.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NAuth" Version="*" />
   </ItemGroup>
 </Project>
