@@ -14,5 +14,6 @@
       "Bash(dotnet publish:*)",
       "Read(//tmp/bazzuca-publish/**)"
     ]
-  }
+  },
+  "outputStyle": "default"
 }

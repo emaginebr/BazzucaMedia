@@ -6,6 +6,7 @@ namespace Bazzuca.DTO.Post
         Scheduled = 2,
         ScheduredOnNetwork = 3,
         Posted = 4,
-        Canceled = 5
+        Canceled = 5,
+        Queued = 6
     }
 }

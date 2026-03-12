@@ -32,18 +32,15 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories with correct permissions
-RUN mkdir -p /app/logs /app/certs && \
-    chmod 755 /app/logs && \
-    chmod 755 /app/certs
+RUN mkdir -p /app/logs && \
+    chmod 755 /app/logs
 
-# Expose ports
+# Expose port
 EXPOSE 80
-EXPOSE 443
 
 # Copy published application
 COPY --from=publish /app/publish .
 
-# ASPNETCORE_URLS is configured programmatically in Program.cs based on certificate availability
 ENV ASPNETCORE_ENVIRONMENT=Docker
 
 # Run the application

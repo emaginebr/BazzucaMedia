@@ -9,6 +9,7 @@ using Bazzuca.Infra.Context;
 using Bazzuca.Infra.Interface;
 using Bazzuca.Infra.Interface.Repository;
 using Bazzuca.Infra.Repository;
+using Bazzuca.Infra.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +56,7 @@ namespace Bazzuca.Application
             }
             else
             {
-                // BackgroundService: resolve DbContext using default tenant from config
+                // Worker: resolve DbContext using default tenant from config
                 var defaultTenantId = configuration["Tenant:DefaultTenantId"]
                     ?? throw new InvalidOperationException(
                         "Tenant:DefaultTenantId is not configured.");
@@ -88,6 +89,8 @@ namespace Bazzuca.Application
             injectDependency(typeof(ITwitterService), typeof(TwitterService), services, scoped);
             injectDependency(typeof(IXService), typeof(XService), services, scoped);
             injectDependency(typeof(IXTokenService), typeof(XTokenService), services, scoped);
+            injectDependency(typeof(ILinkedinService), typeof(LinkedinService), services, scoped);
+            injectDependency(typeof(ILinkedinAppService), typeof(LinkedinAppService), services, scoped);
             #endregion
 
             #region Factory
@@ -97,6 +100,10 @@ namespace Bazzuca.Application
             #endregion
 
             injectDependency(typeof(IUserClient), typeof(UserClient), services, scoped);
+
+            // Singleton services
+            services.AddSingleton<IRabbitAppService, RabbitAppService>();
+            services.AddSingleton<ITenantDbContextFactory, TenantDbContextFactory>();
 
             services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, NAuthHandler>("BasicAuthentication", null);

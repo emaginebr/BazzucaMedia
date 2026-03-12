@@ -37,9 +37,10 @@ jobs:
 
           # Inject .env.prod from GitHub Secrets
           cat > .env.prod <<'ENVEOF'
-          CERTIFICATE_PASSWORD=${{ secrets.CERTIFICATE_PASSWORD }}
           BAZZUCA_CONNECTION_STRING=${{ secrets.BAZZUCA_CONNECTION_STRING }}
           BAZZUCA_JWT_SECRET=${{ secrets.BAZZUCA_JWT_SECRET }}
+          RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+          RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
           ENVEOF
 
           # Remove leading whitespace from .env.prod

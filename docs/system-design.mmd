@@ -3,6 +3,7 @@ flowchart TD
         NAuth["NAuth API\n(Authentication)"]
         S3["AWS S3\n(File Storage)"]
         XApi["X/Twitter API\n(OAuth 1.0a)"]
+        LinkedIn["LinkedIn\n(Web Automation)"]
     end
 
     subgraph Client["Client Applications"]
@@ -19,12 +20,14 @@ flowchart TD
         subgraph App["Application Layer"]
             Initializer["Initializer\n(DI Registration)"]
             TenantCtx["TenantContext\n(Tenant Resolution)"]
+            TenantFactory["TenantDbContextFactory\n(Worker Tenant Resolution)"]
         end
 
         subgraph Domain["Domain Layer"]
             Services["Domain Services\nClientService | PostService\nSocialNetworkService"]
             Factories["Domain Factories\nClient | Post | SocialNetwork"]
-            XService["XService\n(Publisher)"]
+            XService["XService\n(X Publisher)"]
+            LinkedinSvc["LinkedinService\n(Retry/DLQ Orchestrator)"]
             S3Service["S3Service\n(Media)"]
         end
 
@@ -32,6 +35,19 @@ flowchart TD
             Context["BazzucaContext\n(EF Core + PostgreSQL)"]
             Repos["Repositories\nClient | Post | SocialNetwork"]
             UoW["UnitOfWork"]
+            RabbitSvc["RabbitAppService\n(Queue Management)"]
+            LinkedinApp["LinkedinAppService\n(Playwright Browser)"]
+        end
+
+        subgraph MQ["Message Broker"]
+            RabbitMQ["RabbitMQ"]
+            MsgQueue["bazzuca.linkedin.msg"]
+            RetryQueue["bazzuca.linkedin.retry\n(TTL → re-queue)"]
+            ErrorQueue["bazzuca.linkedin.error\n(DLQ)"]
+        end
+
+        subgraph Worker["Bazzuca.Worker"]
+            LinkedinBG["LinkedinBackgroundService\n(Consumer)"]
         end
 
         subgraph DB["Database"]
@@ -56,7 +72,26 @@ flowchart TD
     Services --> S3Service
     TenantCtx -->|"Resolve ConnectionString"| Context
 
+    %% Async LinkedIn Flow
+    Controllers -->|"LinkedIn Posts\n(Publish to Queue)"| RabbitSvc
+    RabbitSvc --> MsgQueue
+    MsgQueue --> RabbitMQ
+    RabbitMQ --> LinkedinBG
+    LinkedinBG -->|"Extract Tenant\nCreate Scope"| TenantFactory
+    LinkedinBG --> LinkedinSvc
+    LinkedinSvc --> LinkedinApp
+    LinkedinApp -->|"Playwright\nBrowser Automation"| LinkedIn
+    LinkedinSvc -->|"On Failure"| RabbitSvc
+    RabbitSvc -->|"Retry < Max"| RetryQueue
+    RetryQueue -->|"TTL Expired"| MsgQueue
+    RabbitSvc -->|"Retry >= Max"| ErrorQueue
+    LinkedinSvc --> S3Service
+
     classDef external fill:#f9f,stroke:#333,stroke-width:1px
     classDef database fill:#e8daef,stroke:#333,stroke-width:2px
-    class NAuth,S3,XApi external
+    classDef queue fill:#ffeaa7,stroke:#333,stroke-width:1px
+    classDef worker fill:#dfe6e9,stroke:#333,stroke-width:2px
+    class NAuth,S3,XApi,LinkedIn external
     class PG_Bazzuca database
+    class MsgQueue,RetryQueue,ErrorQueue,RabbitMQ queue
+    class LinkedinBG worker

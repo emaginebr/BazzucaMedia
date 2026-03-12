@@ -1,4 +1,20 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: bazzuca-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - emagine-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   bazzuca-api:
     build:
       context: .
@@ -6,17 +22,21 @@ services:
     image: bazzuca-bazzuca-api:latest
     container_name: bazzuca-api
     restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - CERTIFICATE_PASSWORD=${CERTIFICATE_PASSWORD}
       - Tenant__DefaultTenantId=bazzuca
       - Tenants__bazzuca__ConnectionString=${BAZZUCA_CONNECTION_STRING}
       - Tenants__bazzuca__JwtSecret=${BAZZUCA_JWT_SECRET}
       - NAuth__JwtSecret=${BAZZUCA_JWT_SECRET}
+      - RabbitMQ__HostName=bazzuca-rabbitmq
+      - RabbitMQ__UserName=${RABBITMQ_USER:-guest}
+      - RabbitMQ__Password=${RABBITMQ_PASSWORD:-guest}
     # Ports not exposed externally — access via emagine-network
     expose:
       - "80"
-      - "443"
     volumes:
       - bazzuca_logs:/app/logs
     networks:
@@ -28,8 +48,35 @@ services:
       retries: 3
       start_period: 40s
 
+  bazzuca-worker:
+    build:
+      context: .
+      dockerfile: BazzucaWorker.Dockerfile
+    image: bazzuca-bazzuca-worker:latest
+    container_name: bazzuca-worker
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Tenant__DefaultTenantId=bazzuca
+      - Tenants__bazzuca__ConnectionString=${BAZZUCA_CONNECTION_STRING}
+      - Tenants__bazzuca__JwtSecret=${BAZZUCA_JWT_SECRET}
+      - RabbitMQ__HostName=bazzuca-rabbitmq
+      - RabbitMQ__UserName=${RABBITMQ_USER:-guest}
+      - RabbitMQ__Password=${RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - worker_playwright_data:/app/playwright-data
+    networks:
+      - emagine-network
+
 volumes:
   bazzuca_logs:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  worker_playwright_data:
     driver: local
 
 networks:

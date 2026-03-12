@@ -5,16 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
-    <PackageReference Include="ncrontab" Version="3.3.3" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.*" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="ncrontab" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bazzuca.Application\Bazzuca.Application.csproj" />
     <ProjectReference Include="..\Bazzuca.Domain\Bazzuca.Domain.csproj" />
     <ProjectReference Include="..\Bazzuca.DTO\Bazzuca.DTO.csproj" />
+    <ProjectReference Include="..\Bazzuca.Infra\Bazzuca.Infra.csproj" />
+    <ProjectReference Include="..\Bazzuca.Infra.Interface\Bazzuca.Infra.Interface.csproj" />
   </ItemGroup>
 </Project>
