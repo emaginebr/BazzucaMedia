@@ -27,21 +27,27 @@ namespace Bazzuca.API
                 {
                     var certificatePath = Path.Combine(AppContext.BaseDirectory, "emagine.pfx");
                     var certificatePassword = Environment.GetEnvironmentVariable("CERTIFICATE_PASSWORD");
+                    var hasCertificate = !string.IsNullOrEmpty(certificatePassword) && File.Exists(certificatePath);
 
-                    if (!string.IsNullOrEmpty(certificatePassword) && File.Exists(certificatePath))
+                    if (hasCertificate)
                     {
                         Console.WriteLine($"Certificado encontrado em: {certificatePath}");
                         webBuilder.UseKestrel(options =>
                         {
-                            options.ConfigureHttpsDefaults(httpsOptions =>
+                            options.ListenAnyIP(80);
+                            options.ListenAnyIP(443, listenOptions =>
                             {
-                                httpsOptions.ServerCertificate = new X509Certificate2(certificatePath, certificatePassword);
+                                listenOptions.UseHttps(certificatePath, certificatePassword);
                             });
                         });
                     }
                     else
                     {
                         Console.WriteLine("Executando sem certificado HTTPS - modo HTTP apenas");
+                        webBuilder.UseKestrel(options =>
+                        {
+                            options.ListenAnyIP(80);
+                        });
                     }
 
                     webBuilder.UseStartup<Startup>();

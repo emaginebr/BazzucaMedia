@@ -34,7 +34,6 @@ services:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ASPNETCORE_URLS=http://+:80
       - Tenant__DefaultTenantId=${DEFAULT_TENANT_ID:-bazzuca}
       - Tenants__bazzuca__ConnectionString=${BAZZUCA_CONNECTION_STRING}
       - Tenants__bazzuca__JwtSecret=${BAZZUCA_JWT_SECRET}

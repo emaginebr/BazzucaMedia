@@ -16,9 +16,6 @@ RUN dotnet restore "Bazzuca.API/Bazzuca.API.csproj"
 # Copy all source files
 COPY . .
 
-# Generate a dummy certificate for build (the .pfx is gitignored)
-RUN dotnet dev-certs https -ep /src/Bazzuca.API/bazzuca.pfx -p dummy
-
 # Build the application
 WORKDIR "/src/Bazzuca.API"
 RUN dotnet build "Bazzuca.API.csproj" -c Release -o /app/build
@@ -46,8 +43,7 @@ EXPOSE 443
 # Copy published application
 COPY --from=publish /app/publish .
 
-# Set environment variables
-ENV ASPNETCORE_URLS=http://+:80;https://+:443
+# ASPNETCORE_URLS is configured programmatically in Program.cs based on certificate availability
 ENV ASPNETCORE_ENVIRONMENT=Docker
 
 # Run the application
