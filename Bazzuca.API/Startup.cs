@@ -1,4 +1,5 @@
 using Bazzuca.Application;
+using Bazzuca.API.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -28,11 +29,10 @@ namespace Bazzuca.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.Configure<MailerSendSetting>(Configuration.GetSection("MailerSend"));
             services.Configure<NAuthSetting>(Configuration.GetSection("NAuth"));
 
-            Initializer.Configure(services, Configuration.GetConnectionString("BazzucaContext"));
-            
+            Initializer.Configure(services, Configuration);
+
             services.AddLogging(builder =>
             {
                 builder.AddConsole();
@@ -41,7 +41,7 @@ namespace Bazzuca.API
             });
 
             services.AddHttpClient();
-            
+
             services.AddControllers();
             services.AddHealthChecks();
             services.AddSwaggerGen(c =>
@@ -68,7 +68,7 @@ namespace Bazzuca.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.EnvironmentName == "Docker")
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger(c =>
@@ -78,7 +78,6 @@ namespace Bazzuca.API
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bazzuca.API v1");
-                    //c.RoutePrefix = string.Empty;
                 });
             }
 
@@ -100,13 +99,15 @@ namespace Bazzuca.API
                 });
 
             app.UseRouting();
-            
+
             // CORS deve vir ANTES de Authentication e Authorization
             app.UseCors("MyPolicy");
 
+            // TenantMiddleware DEVE vir ANTES de Authentication
+            app.UseMiddleware<TenantMiddleware>();
+
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.UseEndpoints(endpoints =>
             {

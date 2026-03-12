@@ -1,0 +1,62 @@
+flowchart TD
+    subgraph External["External Services"]
+        NAuth["NAuth API\n(Authentication)"]
+        S3["AWS S3\n(File Storage)"]
+        XApi["X/Twitter API\n(OAuth 1.0a)"]
+    end
+
+    subgraph Client["Client Applications"]
+        Browser["Browser / Frontend"]
+    end
+
+    subgraph Docker["Docker Environment"]
+        subgraph API["Bazzuca.API"]
+            TenantMW["TenantMiddleware\n(X-Tenant-Id)"]
+            AuthMW["NAuth Handler\n(JWT Validation)"]
+            Controllers["Controllers\nClient | Post | SocialNetwork\nImage | X"]
+        end
+
+        subgraph App["Application Layer"]
+            Initializer["Initializer\n(DI Registration)"]
+            TenantCtx["TenantContext\n(Tenant Resolution)"]
+        end
+
+        subgraph Domain["Domain Layer"]
+            Services["Domain Services\nClientService | PostService\nSocialNetworkService"]
+            Factories["Domain Factories\nClient | Post | SocialNetwork"]
+            XService["XService\n(Publisher)"]
+            S3Service["S3Service\n(Media)"]
+        end
+
+        subgraph Infra["Infrastructure Layer"]
+            Context["BazzucaContext\n(EF Core + PostgreSQL)"]
+            Repos["Repositories\nClient | Post | SocialNetwork"]
+            UoW["UnitOfWork"]
+        end
+
+        subgraph DB["Database"]
+            PG_Bazzuca[("PostgreSQL\nbazzuca_db")]
+        end
+    end
+
+    Browser -->|"HTTP + X-Tenant-Id"| TenantMW
+    TenantMW --> AuthMW
+    AuthMW --> Controllers
+    Controllers --> Services
+    Services --> Factories
+    Services --> Repos
+    Repos --> Context
+    Context --> PG_Bazzuca
+    Repos --> UoW
+
+    Controllers -->|"Auth"| NAuth
+    XService -->|"Publish Posts"| XApi
+    S3Service -->|"Upload/Download Media"| S3
+    Services --> XService
+    Services --> S3Service
+    TenantCtx -->|"Resolve ConnectionString"| Context
+
+    classDef external fill:#f9f,stroke:#333,stroke-width:1px
+    classDef database fill:#e8daef,stroke:#333,stroke-width:2px
+    class NAuth,S3,XApi external
+    class PG_Bazzuca database

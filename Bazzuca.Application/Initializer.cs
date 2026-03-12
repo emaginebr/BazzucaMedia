@@ -1,3 +1,5 @@
+using Bazzuca.Application.Interfaces;
+using Bazzuca.Application.Services;
 using Bazzuca.Domain.Interface;
 using Bazzuca.Domain.Interface.Factory;
 using Bazzuca.Domain.Interface.Models;
@@ -8,7 +10,9 @@ using Bazzuca.Infra.Interface;
 using Bazzuca.Infra.Interface.Repository;
 using Bazzuca.Infra.Repository;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NAuth.ACL;
@@ -26,17 +30,48 @@ namespace Bazzuca.Application
             else
                 services.AddTransient(serviceType, implementationType);
         }
-        public static void Configure(IServiceCollection services, string connection, bool scoped = true)
+        public static void Configure(IServiceCollection services, IConfiguration configuration, bool scoped = true)
         {
+            #region Multi-Tenant
             if (scoped)
-                services.AddDbContext<BazzucaContext>(x => x.UseLazyLoadingProxies().UseNpgsql(connection));
+            {
+                // API: resolve DbContext per-request using tenant from X-Tenant-Id header or JWT claim
+                services.AddHttpContextAccessor();
+                services.AddScoped<ITenantContext, TenantContext>();
+                services.AddScoped<BazzucaContext>(sp =>
+                {
+                    var tenantContext = sp.GetRequiredService<ITenantContext>();
+                    var config = sp.GetRequiredService<IConfiguration>();
+                    var tenantId = tenantContext.TenantId;
+                    var connectionString = config[$"Tenants:{tenantId}:ConnectionString"]
+                        ?? throw new InvalidOperationException(
+                            $"ConnectionString not found for tenant '{tenantId}'. " +
+                            $"Expected key: Tenants:{tenantId}:ConnectionString");
+
+                    var optionsBuilder = new DbContextOptionsBuilder<BazzucaContext>();
+                    optionsBuilder.UseLazyLoadingProxies().UseNpgsql(connectionString);
+                    return new BazzucaContext(optionsBuilder.Options);
+                });
+            }
             else
-                services.AddDbContextFactory<BazzucaContext>(x => x.UseLazyLoadingProxies().UseNpgsql(connection));
+            {
+                // BackgroundService: resolve DbContext using default tenant from config
+                var defaultTenantId = configuration["Tenant:DefaultTenantId"]
+                    ?? throw new InvalidOperationException(
+                        "Tenant:DefaultTenantId is not configured.");
+                var connection = configuration[$"Tenants:{defaultTenantId}:ConnectionString"]
+                    ?? throw new InvalidOperationException(
+                        $"ConnectionString not found for tenant '{defaultTenantId}'.");
+
+                services.AddDbContextFactory<BazzucaContext>(x =>
+                    x.UseLazyLoadingProxies().UseNpgsql(connection));
+            }
+
+            services.AddScoped<ITenantResolver, TenantResolver>();
+            #endregion
 
             #region Infra
-            injectDependency(typeof(BazzucaContext), typeof(BazzucaContext), services, scoped);
             injectDependency(typeof(IUnitOfWork), typeof(UnitOfWork), services, scoped);
-            //injectDependency(typeof(ILogger), typeof(Logger), services, scoped);
             #endregion
 
             #region Repository
@@ -46,7 +81,6 @@ namespace Bazzuca.Application
             #endregion
 
             #region Service
-            //injectDependency(typeof(IUserClient), typeof(UserClient), services, scoped);
             injectDependency(typeof(ISocialNetworkService), typeof(SocialNetworkService), services, scoped);
             injectDependency(typeof(IClientService), typeof(ClientService), services, scoped);
             injectDependency(typeof(IPostService), typeof(PostService), services, scoped);
@@ -54,7 +88,6 @@ namespace Bazzuca.Application
             injectDependency(typeof(ITwitterService), typeof(TwitterService), services, scoped);
             injectDependency(typeof(IXService), typeof(XService), services, scoped);
             injectDependency(typeof(IXTokenService), typeof(XTokenService), services, scoped);
-            // Adicione aqui se houver um serviço para SocialNetwork
             #endregion
 
             #region Factory
@@ -65,10 +98,8 @@ namespace Bazzuca.Application
 
             injectDependency(typeof(IUserClient), typeof(UserClient), services, scoped);
 
-
-                services.AddAuthentication("BasicAuthentication")
-                    .AddScheme<AuthenticationSchemeOptions, NAuthHandler>("BasicAuthentication", null);
-
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, NAuthHandler>("BasicAuthentication", null);
         }
     }
 }

@@ -1,106 +1,270 @@
-# BazzucaSocial
+# BazzucaMedia - Social Media Management Platform
 
-Sistema de gerenciamento de m�dia social para m�ltiplos clientes e redes sociais.
+![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-## ?? Configura��o R�pida
+## Overview
 
-### Pr�-requisitos
+**BazzucaMedia** is a multi-tenant social media management platform for scheduling and publishing content across multiple social networks (X/Twitter, Instagram, Facebook, LinkedIn, TikTok, YouTube). Built with **.NET 8** and **PostgreSQL**, it provides client management, post scheduling with calendar view, media upload via AWS S3, and automated publishing to X/Twitter via OAuth 1.0a.
 
-- Docker e Docker Compose
-- .NET 8 SDK (para desenvolvimento local)
-- Node.js (para desenvolvimento local do frontend)
+The project follows **Clean Architecture** with six layers and supports per-tenant database isolation.
 
-### Configura��o do Certificado SSL
+---
 
-Antes de executar a aplica��o com HTTPS, voc� precisa gerar um certificado SSL:
+## Features
 
-#### No Windows (PowerShell)
+- **Multi-Tenant** - Per-tenant database isolation via `X-Tenant-Id` header and JWT claims
+- **Client Management** - CRUD for client accounts with soft-delete
+- **Post Scheduling** - Calendar-based scheduling with automatic conflict resolution (30-min increments)
+- **Social Network Integration** - OAuth credential management for multiple networks per client
+- **X/Twitter Publishing** - Automated posting with chunked video upload (OAuth 1.0a)
+- **Media Storage** - File upload to AWS S3 via zTools
+- **JWT Authentication** - Per-tenant JWT secrets via NAuth
+- **Background Jobs** - Scheduled task infrastructure for async publishing
 
-```powershell
-.\generate-cert.ps1
+---
+
+## Technologies Used
+
+### Core
+- **.NET 8** - Web API and Background Service
+- **Entity Framework Core 9** - ORM with Lazy Loading Proxies
+- **PostgreSQL** - Database (Npgsql provider)
+
+### Authentication & Utilities
+- **NAuth** - JWT authentication with `IUserClient`
+- **zTools** - S3 file upload, ChatGPT, slug generation, email
+
+### External APIs
+- **AWS S3** - Media file storage
+- **X/Twitter API** - OAuth 1.0a, chunked video upload
+
+### DevOps
+- **Docker / Docker Compose** - Containerized deployment
+- **GitHub Actions** - Semantic versioning (GitVersion), release creation, SSH deploy
+
+---
+
+## Project Structure
+
+```
+BazzucaMedia/
+├── Bazzuca.API/                 # REST API (Controllers, Middlewares, Startup)
+├── Bazzuca.Application/         # DI registration (Initializer.cs), Tenant services
+├── Bazzuca.Domain/              # Models, Services, Factories (business logic)
+├── Bazzuca.DTO/                 # Data Transfer Objects, Enums
+├── Bazzuca.Infra/               # DbContext, Repositories, UnitOfWork, Migrations
+├── Bazzuca.Infra.Interface/     # Repository interfaces (zero dependencies)
+├── Bazzuca.BackgroundService/   # Scheduled tasks worker
+├── docs/                        # System design diagrams
+├── docker-compose.yml           # Docker local development
+├── docker-compose-prod.yml      # Production deployment
+├── BazzucaAPI.Dockerfile        # API container image
+└── .github/workflows/           # CI/CD pipelines
 ```
 
-#### No Linux/Mac/WSL
+---
+
+## System Design
+
+The following diagram illustrates the high-level architecture of **BazzucaMedia**:
+
+![System Design](docs/system-design.png)
+
+The request flow starts at the **TenantMiddleware** which extracts the tenant from the `X-Tenant-Id` header, followed by **NAuth** JWT validation. Controllers delegate to **Domain Services** which orchestrate business logic through **Factories** and **Repositories**. The **BazzucaContext** is created per-request with the tenant-specific connection string. External integrations include **NAuth** for authentication, **AWS S3** for media storage, and the **X/Twitter API** for publishing.
+
+> The editable Mermaid source is available at [`docs/system-design.mmd`](docs/system-design.mmd).
+
+---
+
+## Environment Configuration
+
+### 1. Copy the environment template
 
 ```bash
-chmod +x generate-cert.sh
-./generate-cert.sh
+cp .env.example .env
 ```
 
-O certificado ser� gerado automaticamente no diret�rio `./certs/` com a senha configurada no arquivo `.env`.
-
-Caso deseje configurar um certificado existente, defina as vari�veis abaixo no arquivo `.env`:
+### 2. Edit the `.env` file
 
 ```env
-# Caminho e senha do certificado existente
-CERTIFICATE_PATH=/caminho/para/seu/certificado.pfx
-CERTIFICATE_PASSWORD=sua_senha
-```
+# PostgreSQL
+POSTGRES_DB=bazzuca_db
+POSTGRES_USER=bazzuca_user
+POSTGRES_PASSWORD=your_secure_password_here
+POSTGRES_PORT=5434
 
-### Executar com Docker
+# Multi-Tenant
+DEFAULT_TENANT_ID=bazzuca
+BAZZUCA_CONNECTION_STRING=Host=bazzuca-postgres;Port=5432;Database=bazzuca_db;Username=bazzuca_user;Password=your_secure_password_here
+BAZZUCA_JWT_SECRET=your_jwt_secret_min_32_chars
 
-```bash
-# Iniciar todos os servi�os
-docker-compose up -d
-
-# Ver logs
-docker-compose logs -f bazzuca-api
-
-# Parar servi�os
-docker-compose down
-```
-
-A API estar� dispon�vel em:
-
-- HTTP: http://localhost:5010
-- HTTPS: https://localhost:5011
-
-### Vari�veis de Ambiente
-
-Todas as configura��es est�o no arquivo `.env`:
-
-```env
-# Certificado SSL
-CERTIFICATE_PATH=/app/certs/certificate.pfx
-CERTIFICATE_PASSWORD=pikpro6
-CERTIFICATE_DIRECTORY=./certs
-
-# Portas da API
+# API
 API_HTTP_PORT=5010
-API_HTTPS_PORT=5011
-
-# Outras configura��es...
 ```
 
-## ?? Notas sobre HTTPS
+The project uses three environments:
 
-- Em **desenvolvimento**: Use certificados autoassinados (gerados pelos scripts)
-- Em **produ��o**: Use certificados v�lidos de uma CA (Let's Encrypt, etc.)
-- Se o certificado n�o for encontrado, a aplica��o funcionar� apenas em HTTP
-- Nunca fa�a commit de arquivos de certificado no reposit�rio
+| Environment | Config File | Secrets Source | Swagger |
+|---|---|---|---|
+| **Development** | `appsettings.Development.json` | Values inline | Yes |
+| **Docker** | `appsettings.Docker.json` | `.env` file | Yes |
+| **Production** | `appsettings.Production.json` | `.env.prod` file | No |
 
-## ?? Desenvolvimento Local
+---
 
-Para executar sem Docker:
+## Docker Setup
+
+### Quick Start
 
 ```bash
-cd Bazzuca.API
-dotnet run
+# Create external network (first time only)
+docker network create emagine-network
+
+# Build and start
+docker compose up -d --build
+
+# Verify
+docker compose ps
+docker compose logs -f bazzuca-api
 ```
 
-## ?? Documenta��o da API
+### Accessing the Application
 
-Com a aplica��o em execu��o, acesse:
+| Service | URL |
+|---------|-----|
+| **API** | http://localhost:5010 |
+| **Swagger UI** | http://localhost:5010/swagger |
+| **PostgreSQL** | localhost:5434 |
 
-- Swagger UI: http://localhost:5010/swagger
+### Docker Compose Commands
 
-## ?? Docker
+| Action | Command |
+|--------|---------|
+| Start services | `docker compose up -d` |
+| Start with rebuild | `docker compose up -d --build` |
+| Stop services | `docker compose stop` |
+| View logs | `docker compose logs -f` |
+| Remove containers | `docker compose down` |
+| Remove with volumes | `docker compose down -v` |
 
-A aplica��o suporta HTTPS atrav�s de certificados montados via volume. O certificado deve estar no diret�rio `./certs/` conforme configurado no `.env`.
+---
 
-## ?? Seguran�a
+## Manual Setup (Without Docker)
 
-- Sempre use HTTPS em produ��o
-- Nunca exponha senhas ou certificados no c�digo
-- Use Azure Key Vault ou AWS Secrets Manager para produ��o
-- Rotacione certificados regularmente
+### Prerequisites
+- .NET 8 SDK
+- PostgreSQL 17
+
+### Setup Steps
+
+#### 1. Configure the database
+
+Create the database and run migrations:
+
+```bash
+dotnet ef database update --project Bazzuca.Infra --startup-project Bazzuca.API
+```
+
+#### 2. Configure environment
+
+Create `Bazzuca.API/appsettings.Development.json` with your local connection strings and JWT secrets (see `.env.example` for reference).
+
+#### 3. Run the API
+
+```bash
+dotnet run --project Bazzuca.API
+```
+
+The API will be available at https://localhost:9443 and http://localhost:9080.
+
+---
+
+## API Documentation
+
+With the application running, access Swagger UI at: http://localhost:5010/swagger
+
+### Authentication
+
+All endpoints require the `Authorization` header with a JWT token issued by NAuth. Multi-tenant endpoints also require the `X-Tenant-Id` header.
+
+### Key Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/client/listByUser` | List user's clients | Yes |
+| GET | `/client/getById/{id}` | Get client by ID | Yes |
+| POST | `/client/insert` | Create client | Yes |
+| POST | `/client/update` | Update client | Yes |
+| DELETE | `/client/delete/{id}` | Soft-delete client | Yes |
+| GET | `/post/listByUser/{month}/{year}` | Calendar month posts | Yes |
+| GET | `/post/getById/{id}` | Get post by ID | Yes |
+| POST | `/post/insert` | Create post | Yes |
+| POST | `/post/update` | Update post | Yes |
+| POST | `/post/publish` | Publish post to network | Yes |
+| GET | `/post/search` | Search posts (paginated) | Yes |
+| GET | `/socialnetwork/listByClient/{id}` | List client networks | Yes |
+| POST | `/image/upload` | Upload media to S3 | Yes |
+
+---
+
+## Database
+
+### Migrations
+
+```bash
+# Create new migration
+dotnet ef migrations add <MigrationName> --project Bazzuca.Infra --startup-project Bazzuca.API
+
+# Apply migrations
+dotnet ef database update --project Bazzuca.Infra --startup-project Bazzuca.API
+```
+
+### Backup
+
+```bash
+pg_dump -h localhost -p 5434 -U bazzuca_user -d bazzuca_db > backup.sql
+```
+
+### Restore
+
+```bash
+psql -h localhost -p 5434 -U bazzuca_user -d bazzuca_db < backup.sql
+```
+
+---
+
+## Deployment
+
+### Production
+
+Production deployment uses `docker-compose-prod.yml` with secrets from `.env.prod`:
+
+```bash
+cp .env.prod.example .env.prod
+# Edit .env.prod with production secrets
+
+docker compose --env-file .env.prod -f docker-compose-prod.yml up --build -d
+```
+
+### CI/CD (GitHub Actions)
+
+| Workflow | Trigger | Description |
+|----------|---------|-------------|
+| **Version and Tag** | Push to `main` | Auto-generates semantic version tag via GitVersion |
+| **Create Release** | After version tag | Creates GitHub Release and release branch (minor/major only) |
+| **Deploy Production** | Manual dispatch | SSH deploy to production server |
+
+---
+
+## Author
+
+Developed by **[Rodrigo Landim Carneiro](https://github.com/nicloay)**
+
+---
+
+## License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.

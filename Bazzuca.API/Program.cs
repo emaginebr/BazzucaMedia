@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Bazzuca.API
@@ -26,35 +25,25 @@ namespace Bazzuca.API
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-                    var certificatePath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
-                    var certificatePassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password");
-                    
-                    // Configurar certificado se o caminho e senha estiverem dispon�veis
-                    if (!string.IsNullOrEmpty(certificatePath) && !string.IsNullOrEmpty(certificatePassword))
+                    var certificatePath = Path.Combine(AppContext.BaseDirectory, "emagine.pfx");
+                    var certificatePassword = Environment.GetEnvironmentVariable("CERTIFICATE_PASSWORD");
+
+                    if (!string.IsNullOrEmpty(certificatePassword) && File.Exists(certificatePath))
                     {
-                        if (File.Exists(certificatePath))
+                        Console.WriteLine($"Certificado encontrado em: {certificatePath}");
+                        webBuilder.UseKestrel(options =>
                         {
-                            Console.WriteLine($"Certificado encontrado em: {certificatePath}");
-                            webBuilder.UseKestrel(options =>
+                            options.ConfigureHttpsDefaults(httpsOptions =>
                             {
-                                options.ConfigureHttpsDefaults(httpsOptions =>
-                                {
-                                    httpsOptions.ServerCertificate = new X509Certificate2(certificatePath, certificatePassword);
-                                });
+                                httpsOptions.ServerCertificate = new X509Certificate2(certificatePath, certificatePassword);
                             });
-                        }
-                        else
-                        {
-                            Console.WriteLine($"AVISO: Certificado n�o encontrado em: {certificatePath}");
-                            Console.WriteLine("Executando em modo HTTP apenas");
-                        }
+                        });
                     }
                     else
                     {
-                            Console.WriteLine("Executando sem certificado HTTPS - modo HTTP apenas");
+                        Console.WriteLine("Executando sem certificado HTTPS - modo HTTP apenas");
                     }
-                    
+
                     webBuilder.UseStartup<Startup>();
                 });
     }

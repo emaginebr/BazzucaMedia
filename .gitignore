@@ -400,6 +400,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /Bazzuca.API/appsettings.Development.json
-/Bazzuca.API/appsettings.Docker.json
-/Bazzuca.API/*.pfx
 /createContext.bat
+
+# Environment files with secrets
+.env
+.env.prod
+.env.local

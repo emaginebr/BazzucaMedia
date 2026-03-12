@@ -1,0 +1,39 @@
+services:
+  bazzuca-api:
+    build:
+      context: .
+      dockerfile: BazzucaAPI.Dockerfile
+    image: bazzuca-bazzuca-api:latest
+    container_name: bazzuca-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - CERTIFICATE_PASSWORD=${CERTIFICATE_PASSWORD}
+      - Tenant__DefaultTenantId=bazzuca
+      - Tenants__bazzuca__ConnectionString=${BAZZUCA_CONNECTION_STRING}
+      - Tenants__bazzuca__JwtSecret=${BAZZUCA_JWT_SECRET}
+      - NAuth__JwtSecret=${BAZZUCA_JWT_SECRET}
+    # Ports not exposed externally — access via emagine-network
+    expose:
+      - "80"
+      - "443"
+    volumes:
+      - bazzuca_logs:/app/logs
+    networks:
+      - emagine-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  bazzuca_logs:
+    driver: local
+
+networks:
+  emagine-network:
+    name: emagine-network
+    external: true

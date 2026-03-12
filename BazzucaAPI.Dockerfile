@@ -40,14 +40,14 @@ RUN mkdir -p /app/logs /app/certs && \
     chmod 755 /app/certs
 
 # Expose ports
-EXPOSE 8080
-EXPOSE 8443
+EXPOSE 80
+EXPOSE 443
 
 # Copy published application
 COPY --from=publish /app/publish .
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://+:8080;https://+:8443
+ENV ASPNETCORE_URLS=http://+:80;https://+:443
 ENV ASPNETCORE_ENVIRONMENT=Docker
 
 # Run the application
