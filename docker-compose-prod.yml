@@ -3,6 +3,9 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: bazzuca-rabbitmq
     restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-guest}
     ports:
       - "15672:15672"
     volumes:

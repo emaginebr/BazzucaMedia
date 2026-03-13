@@ -16,12 +16,8 @@ RUN dotnet restore "Bazzuca.Worker/Bazzuca.Worker.csproj"
 # Copy all source files
 COPY . .
 
-# Build the application
-WORKDIR "/src/Bazzuca.Worker"
-RUN dotnet build "Bazzuca.Worker.csproj" -c Release -o /app/build
-
 # Stage 2: Publish
-FROM build AS publish
+WORKDIR "/src/Bazzuca.Worker"
 RUN dotnet publish "Bazzuca.Worker.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage 3: Runtime (Playwright image with Chromium)

@@ -16,12 +16,8 @@ RUN dotnet restore "Bazzuca.API/Bazzuca.API.csproj"
 # Copy all source files
 COPY . .
 
-# Build the application
-WORKDIR "/src/Bazzuca.API"
-RUN dotnet build "Bazzuca.API.csproj" -c Release -o /app/build
-
 # Stage 2: Publish
-FROM build AS publish
+WORKDIR "/src/Bazzuca.API"
 RUN dotnet publish "Bazzuca.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage 3: Runtime
