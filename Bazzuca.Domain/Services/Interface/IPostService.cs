@@ -13,6 +13,8 @@ namespace Bazzuca.Domain.Interface.Services
         IPostModel Insert(PostInfo post);
         IPostModel Update(PostInfo post);
         PostListPaged Search(PostSearchParam param);
-        Task<IPostModel> Publish(IPostModel post);
+        PostInfo Publish(PostInfo postInfo, long userId, string tenantId);
+        Task<PostInfo> PublishDirect(PostInfo postInfo, long userId, bool headless = true);
+        IPostModel MarkAsPublished(long postId);
     }
 }

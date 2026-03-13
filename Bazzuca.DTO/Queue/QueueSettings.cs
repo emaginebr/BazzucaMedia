@@ -2,6 +2,7 @@ namespace Bazzuca.DTO.Queue
 {
     public class QueueSettings
     {
+        public string Exchange { get; set; }
         public string Msg { get; set; }
         public string Retry { get; set; }
         public string Error { get; set; }

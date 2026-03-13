@@ -1,13 +1,18 @@
 using Bazzuca.DTO.Post;
+using Bazzuca.DTO.Queue;
 using Bazzuca.DTO.SocialNetwork;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Bazzuca.Infra.Interface;
 using Bazzuca.Domain.Interface.Factory;
 using Bazzuca.Domain.Interface.Models;
 using Bazzuca.Domain.Interface.Services;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Bazzuca.Domain.Interface
 {
@@ -20,6 +25,9 @@ namespace Bazzuca.Domain.Interface
         private readonly IClientService _clientService;
         private readonly ISocialNetworkService _networkService;
         private readonly IS3Service _s3Service;
+        private readonly IRabbitAppService _rabbitAppService;
+        private readonly ILinkedinAppService _linkedinAppService;
+        private readonly IConfiguration _configuration;
 
         public PostService(
             IUnitOfWork unitOfWork,
@@ -28,7 +36,10 @@ namespace Bazzuca.Domain.Interface
             ISocialNetworkDomainFactory networkFactory,
             IClientService clientService,
             ISocialNetworkService networkService,
-            IS3Service s3Service
+            IS3Service s3Service,
+            IRabbitAppService rabbitAppService,
+            ILinkedinAppService linkedinAppService,
+            IConfiguration configuration
         )
         {
             _unitOfWork = unitOfWork;
@@ -38,6 +49,9 @@ namespace Bazzuca.Domain.Interface
             _clientService = clientService;
             _networkService = networkService;
             _s3Service = s3Service;
+            _rabbitAppService = rabbitAppService;
+            _linkedinAppService = linkedinAppService;
+            _configuration = configuration;
         }
 
         private static (DateTime Start, DateTime End) GetExtendedMonthRange(int month, int year)
@@ -187,28 +201,141 @@ namespace Bazzuca.Domain.Interface
             };
         }
 
-        private IPublisherService GetPublisherService(SocialNetworkEnum socialNetwork)
+        private IPostModel EnsureAndInsert(PostInfo postInfo, long userId)
         {
-            IPublisherService publisherService = null;
-            switch (socialNetwork)
+            // Ensure client exists — find by name+userId or by ID, create only if not found
+            if (postInfo.ClientId == 0 && postInfo.Client != null)
             {
-                case SocialNetworkEnum.X:
-                    //publisherService = new TwitterService(_s3Service);
-                    publisherService = new XService(_s3Service);
-                    break;
-                default:
-                    throw new Exception("Publisher not found");
+                var existingClient = _clientService.ListByUser(userId)
+                    .FirstOrDefault(c => c.Name == postInfo.Client.Name);
+
+                if (existingClient != null)
+                {
+                    postInfo.ClientId = existingClient.ClientId;
+                }
+                else
+                {
+                    postInfo.Client.UserId = userId;
+                    var client = _clientService.Insert(postInfo.Client);
+                    postInfo.ClientId = client.ClientId;
+                }
             }
-            return publisherService;
+            else if (postInfo.ClientId > 0)
+            {
+                var existingClient = _clientService.GetById(postInfo.ClientId);
+                if (existingClient == null && postInfo.Client != null)
+                {
+                    postInfo.Client.UserId = userId;
+                    var client = _clientService.Insert(postInfo.Client);
+                    postInfo.ClientId = client.ClientId;
+                }
+            }
+
+            // Ensure social network exists — find by clientId+network type, create only if not found
+            if (postInfo.NetworkId == 0 && postInfo.SocialNetwork != null)
+            {
+                var existingNetwork = _networkService.ListByClient(postInfo.ClientId)
+                    .FirstOrDefault(n => n.Network == postInfo.SocialNetwork.Network);
+
+                if (existingNetwork != null)
+                {
+                    postInfo.NetworkId = existingNetwork.NetworkId;
+                }
+                else
+                {
+                    postInfo.SocialNetwork.ClientId = postInfo.ClientId;
+                    var network = _networkService.Insert(postInfo.SocialNetwork);
+                    postInfo.NetworkId = network.NetworkId;
+                }
+            }
+            else if (postInfo.NetworkId > 0)
+            {
+                var existingNetwork = _networkService.GetById(postInfo.NetworkId);
+                if (existingNetwork == null && postInfo.SocialNetwork != null)
+                {
+                    postInfo.SocialNetwork.ClientId = postInfo.ClientId;
+                    var network = _networkService.Insert(postInfo.SocialNetwork);
+                    postInfo.NetworkId = network.NetworkId;
+                }
+            }
+
+            // Create post with current date and status Queued
+            postInfo.ScheduleDate = DateTime.UtcNow;
+            postInfo.Status = PostStatusEnum.Queued;
+            return Insert(postInfo);
         }
 
-        public async Task<IPostModel> Publish(IPostModel post)
+        public PostInfo Publish(PostInfo postInfo, long userId, string tenantId)
         {
-            var publisher = GetPublisherService(post.GetSocialNetwork(_networkFactory).Network);
-            await publisher.Publish(post);
+            var post = EnsureAndInsert(postInfo, userId);
+            postInfo.PostId = post.PostId;
+
+            // Publish PostInfo to queue
+            var queueSettings = _configuration.GetSection("Queues:LinkedIn").Get<QueueSettings>();
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(postInfo));
+            var headers = new Dictionary<string, object>
+            {
+                { "X-Tenant-Id", tenantId },
+                { "x-retry-count", 0 }
+            };
+            _rabbitAppService.Publish(queueSettings.Exchange, body, headers);
+
+            return GetPostInfo(post);
+        }
+
+        public async Task<PostInfo> PublishDirect(PostInfo postInfo, long userId, bool headless = true)
+        {
+            var postModel = EnsureAndInsert(postInfo, userId);
+            postInfo.PostId = postModel.PostId;
+
+            var network = _networkService.GetById(postInfo.NetworkId);
+
+            string tempMediaPath = null;
+            try
+            {
+                if (!string.IsNullOrEmpty(postModel.MediaUrl))
+                {
+                    var mediaBytes = await _s3Service.DownloadFile(postModel.MediaUrl);
+                    if (mediaBytes != null && mediaBytes.Length > 0)
+                    {
+                        var extension = Path.GetExtension(postModel.MediaUrl) ?? ".jpg";
+                        tempMediaPath = Path.Combine(Path.GetTempPath(), $"linkedin-{postModel.PostId}{extension}");
+                        await File.WriteAllBytesAsync(tempMediaPath, mediaBytes);
+                    }
+                }
+
+                await _linkedinAppService.PublishPost(
+                    network.User,
+                    network.Password,
+                    postInfo.ClientId,
+                    postModel.Title,
+                    postModel.Description,
+                    tempMediaPath,
+                    headless);
+
+                postModel.Status = PostStatusEnum.Posted;
+                postModel.Update(_postFactory);
+            }
+            finally
+            {
+                if (tempMediaPath != null && File.Exists(tempMediaPath))
+                {
+                    try { File.Delete(tempMediaPath); } catch { }
+                }
+            }
+
+            return GetPostInfo(postModel);
+        }
+
+        public IPostModel MarkAsPublished(long postId)
+        {
+            var post = GetById(postId);
+            if (post == null)
+            {
+                throw new ArgumentException("Post não encontrado");
+            }
             post.Status = PostStatusEnum.Posted;
             return post.Update(_postFactory);
-
         }
     }
 }

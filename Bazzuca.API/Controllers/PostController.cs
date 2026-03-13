@@ -1,16 +1,11 @@
 using Bazzuca.Application.Interfaces;
 using Bazzuca.DTO.Post;
-using Bazzuca.DTO.SocialNetwork;
 using Bazzuca.Infra.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NAuth.ACL.Interfaces;
 using Bazzuca.Domain.Interface.Services;
 
@@ -22,22 +17,16 @@ namespace Bazzuca.API.Controllers
     {
         private readonly IUserClient _userClient;
         private readonly IPostService _postService;
-        private readonly IRabbitAppService _rabbitAppService;
         private readonly ITenantContext _tenantContext;
-        private readonly IConfiguration _configuration;
 
         public PostController(
             IUserClient userClient,
             IPostService postService,
-            IRabbitAppService rabbitAppService,
-            ITenantContext tenantContext,
-            IConfiguration configuration)
+            ITenantContext tenantContext)
         {
             _userClient = userClient;
             _postService = postService;
-            _rabbitAppService = rabbitAppService;
             _tenantContext = tenantContext;
-            _configuration = configuration;
         }
 
         [HttpGet("listByUser/{month}/{year}")]
@@ -147,9 +136,9 @@ namespace Bazzuca.API.Controllers
             }
         }
 
-        [HttpGet("publish/{postId:long}")]
+        [HttpPost("publish")]
         [Authorize]
-        public async Task<ActionResult<PostInfo>> Publish(long postId)
+        public ActionResult<PostInfo> Publish([FromBody] PostInfo postInfo)
         {
             try
             {
@@ -158,46 +147,9 @@ namespace Bazzuca.API.Controllers
                 {
                     return Unauthorized("Not Authorized");
                 }
-                var post = _postService.GetById(postId);
-                if (post == null)
-                {
-                    return NotFound("Post Not Found");
-                }
 
-                var network = post.GetSocialNetwork(
-                    HttpContext.RequestServices.GetService(typeof(Bazzuca.Domain.Interface.Factory.ISocialNetworkDomainFactory))
-                    as Bazzuca.Domain.Interface.Factory.ISocialNetworkDomainFactory);
-
-                switch (network.Network)
-                {
-                    case SocialNetworkEnum.LinkedIn:
-                        var publishMessage = new PublishMessage
-                        {
-                            PostId = post.PostId,
-                            ClientId = post.ClientId,
-                            NetworkId = post.NetworkId,
-                            TenantId = _tenantContext.TenantId
-                        };
-                        var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(publishMessage));
-                        var headers = new Dictionary<string, object>
-                        {
-                            { "X-Tenant-Id", _tenantContext.TenantId },
-                            { "x-retry-count", 0 }
-                        };
-                        _rabbitAppService.Publish("bazzuca.linkedin.exchange", body, headers);
-                        post.Status = PostStatusEnum.Queued;
-                        post.Update(
-                            HttpContext.RequestServices.GetService(typeof(Bazzuca.Domain.Interface.Factory.IPostDomainFactory))
-                            as Bazzuca.Domain.Interface.Factory.IPostDomainFactory);
-                        return Accepted(_postService.GetPostInfo(post));
-
-                    case SocialNetworkEnum.X:
-                        var postReturn = await _postService.Publish(post);
-                        return Ok(_postService.GetPostInfo(postReturn));
-
-                    default:
-                        return StatusCode(501, $"Publishing to {network.Network} is not yet implemented");
-                }
+                var result = _postService.Publish(postInfo, userSession.UserId, _tenantContext.TenantId);
+                return Accepted(result);
             }
             catch (Exception ex)
             {

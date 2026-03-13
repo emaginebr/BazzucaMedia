@@ -7,7 +7,7 @@ namespace Bazzuca.Infra.Interface
 {
     public interface IRabbitAppService : IDisposable
     {
-        void DeclareTopology(string exchangeName, QueueSettings settings);
+        void DeclareTopology(QueueSettings settings);
         void Publish(string exchange, byte[] body, IDictionary<string, object> headers);
         void PublishToRetry(string retryExchange, byte[] body, IDictionary<string, object> headers);
         void PublishToError(string errorExchange, byte[] body, IDictionary<string, object> headers);

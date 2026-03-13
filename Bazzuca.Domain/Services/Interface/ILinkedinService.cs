@@ -6,6 +6,6 @@ namespace Bazzuca.Domain.Interface.Services
 {
     public interface ILinkedinService
     {
-        Task Process(PublishMessage message, IDictionary<string, object> headers);
+        Task Process(PostInfo postInfo, IDictionary<string, object> headers);
     }
 }

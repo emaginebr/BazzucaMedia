@@ -48,19 +48,19 @@ namespace Bazzuca.Domain.Interface
             _logger = logger;
         }
 
-        public async Task Process(PublishMessage message, IDictionary<string, object> headers)
+        public async Task Process(PostInfo postInfo, IDictionary<string, object> headers)
         {
-            var post = _postService.GetById(message.PostId);
+            var post = _postService.GetById(postInfo.PostId);
             if (post == null)
             {
-                _logger.LogError("Post {PostId} not found", message.PostId);
+                _logger.LogError("Post {PostId} not found", postInfo.PostId);
                 return;
             }
 
-            var network = _networkService.GetById(message.NetworkId);
+            var network = _networkService.GetById(postInfo.NetworkId);
             if (network == null)
             {
-                _logger.LogError("SocialNetwork {NetworkId} not found", message.NetworkId);
+                _logger.LogError("SocialNetwork {NetworkId} not found", postInfo.NetworkId);
                 return;
             }
 
@@ -84,7 +84,7 @@ namespace Bazzuca.Domain.Interface
                 await _linkedinAppService.PublishPost(
                     network.User,
                     network.Password,
-                    message.ClientId,
+                    postInfo.ClientId,
                     post.Title,
                     post.Description,
                     tempMediaPath);
@@ -92,12 +92,12 @@ namespace Bazzuca.Domain.Interface
                 // Success — update status
                 post.Status = PostStatusEnum.Posted;
                 post.Update(_postFactory);
-                _logger.LogInformation("LinkedIn post {PostId} published successfully", message.PostId);
+                _logger.LogInformation("LinkedIn post {PostId} published successfully", postInfo.PostId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error publishing LinkedIn post {PostId}", message.PostId);
-                HandleRetry(message, headers, ex);
+                _logger.LogError(ex, "Error publishing LinkedIn post {PostId}", postInfo.PostId);
+                HandleRetry(postInfo, headers, ex);
                 throw;
             }
             finally
@@ -110,7 +110,7 @@ namespace Bazzuca.Domain.Interface
             }
         }
 
-        private void HandleRetry(PublishMessage message, IDictionary<string, object> headers, Exception ex)
+        private void HandleRetry(PostInfo postInfo, IDictionary<string, object> headers, Exception ex)
         {
             var retryCount = 0;
             if (headers.ContainsKey("x-retry-count"))
@@ -121,7 +121,8 @@ namespace Bazzuca.Domain.Interface
             retryCount++;
 
             var queueSettings = _configuration.GetSection("Queues:LinkedIn").Get<QueueSettings>();
-            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+            var baseName = queueSettings.Exchange.Replace(".exchange", "");
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(postInfo));
             var newHeaders = new Dictionary<string, object>(headers)
             {
                 ["x-retry-count"] = retryCount
@@ -130,14 +131,14 @@ namespace Bazzuca.Domain.Interface
             if (retryCount < queueSettings.MaxRetryCount)
             {
                 _logger.LogWarning("Retrying LinkedIn post {PostId} (attempt {Attempt}/{Max})",
-                    message.PostId, retryCount, queueSettings.MaxRetryCount);
-                _rabbitAppService.PublishToRetry("bazzuca.linkedin.retry.exchange", body, newHeaders);
+                    postInfo.PostId, retryCount, queueSettings.MaxRetryCount);
+                _rabbitAppService.PublishToRetry($"{baseName}.retry.exchange", body, newHeaders);
             }
             else
             {
                 _logger.LogError("LinkedIn post {PostId} sent to DLQ after {Max} retries. Error: {Error}",
-                    message.PostId, queueSettings.MaxRetryCount, ex.Message);
-                _rabbitAppService.PublishToError("bazzuca.linkedin.error.exchange", body, newHeaders);
+                    postInfo.PostId, queueSettings.MaxRetryCount, ex.Message);
+                _rabbitAppService.PublishToError($"{baseName}.error.exchange", body, newHeaders);
             }
         }
     }

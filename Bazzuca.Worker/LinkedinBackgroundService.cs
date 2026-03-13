@@ -46,7 +46,7 @@ namespace Bazzuca.Worker
             }
 
             // Declare topology
-            _rabbitAppService.DeclareTopology("bazzuca.linkedin", queueSettings);
+            _rabbitAppService.DeclareTopology(queueSettings);
 
             // Start consuming
             _rabbitAppService.StartConsuming(queueSettings.Msg, async (body, headers) =>
@@ -59,15 +59,15 @@ namespace Bazzuca.Worker
                 }
 
                 var messageJson = Encoding.UTF8.GetString(body);
-                var message = JsonConvert.DeserializeObject<PublishMessage>(messageJson);
-                if (message == null)
+                var postInfo = JsonConvert.DeserializeObject<PostInfo>(messageJson);
+                if (postInfo == null)
                 {
-                    _logger.LogError("Failed to deserialize PublishMessage");
+                    _logger.LogError("Failed to deserialize PostInfo");
                     return;
                 }
 
                 _logger.LogInformation("Processing LinkedIn post {PostId} for tenant {TenantId}",
-                    message.PostId, tenantId);
+                    postInfo.PostId, tenantId);
 
                 using var scope = _serviceProvider.CreateScope();
 
@@ -75,22 +75,18 @@ namespace Bazzuca.Worker
                 var dbContextFactory = scope.ServiceProvider.GetRequiredService<ITenantDbContextFactory>();
                 var dbContext = dbContextFactory.CreateForTenant(tenantId);
 
-                // Replace the scoped BazzucaContext with tenant-specific one
-                // We need to use the scope's service provider to resolve services that depend on BazzucaContext
-                // Since BazzucaContext is registered differently in Worker mode (via DbContextFactory with default tenant),
-                // we create a new scope with the correct context
                 var linkedinService = scope.ServiceProvider.GetRequiredService<ILinkedinService>();
 
                 try
                 {
-                    await linkedinService.Process(message, headers);
-                    _logger.LogInformation("LinkedIn post {PostId} processed successfully", message.PostId);
+                    await linkedinService.Process(postInfo, headers);
+                    _logger.LogInformation("LinkedIn post {PostId} processed successfully", postInfo.PostId);
                 }
                 catch (Exception ex)
                 {
                     // Retry/DLQ already handled inside LinkedinService.Process
                     _logger.LogError(ex, "LinkedIn post {PostId} processing failed (retry/DLQ handled by domain)",
-                        message.PostId);
+                        postInfo.PostId);
                 }
             });
 

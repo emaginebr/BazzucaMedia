@@ -53,10 +53,10 @@ services:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - Tenant__DefaultTenantId=${DEFAULT_TENANT_ID:-bazzuca}
-      - Tenants__bazzuca__ConnectionString=${BAZZUCA_CONNECTION_STRING}
-      - Tenants__bazzuca__JwtSecret=${BAZZUCA_JWT_SECRET}
-      - NAuth__JwtSecret=${BAZZUCA_JWT_SECRET}
+      - Tenant__DefaultTenantId=bazzuca
+      - Tenants__bazzuca__ConnectionString=Host=bazzuca-postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - Tenants__bazzuca__JwtSecret=${JWT_SECRET}
+      - NAuth__JwtSecret=${JWT_SECRET}
       - RabbitMQ__HostName=bazzuca-rabbitmq
     ports:
       - "${API_HTTP_PORT:-5010}:80"
@@ -85,9 +85,9 @@ services:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - Tenant__DefaultTenantId=${DEFAULT_TENANT_ID:-bazzuca}
-      - Tenants__bazzuca__ConnectionString=${BAZZUCA_CONNECTION_STRING}
-      - Tenants__bazzuca__JwtSecret=${BAZZUCA_JWT_SECRET}
+      - Tenant__DefaultTenantId=bazzuca
+      - Tenants__bazzuca__ConnectionString=Host=bazzuca-postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - Tenants__bazzuca__JwtSecret=${JWT_SECRET}
       - RabbitMQ__HostName=bazzuca-rabbitmq
     volumes:
       - worker_playwright_data:/app/playwright-data

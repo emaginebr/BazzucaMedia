@@ -33,16 +33,19 @@ namespace Bazzuca.Infra.Services
             _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
         }
 
-        public void DeclareTopology(string exchangeName, QueueSettings settings)
+        public void DeclareTopology(QueueSettings settings)
         {
+            var mainExchange = settings.Exchange;
+            var baseName = mainExchange.Replace(".exchange", "");
+            var retryExchange = $"{baseName}.retry.exchange";
+            var errorExchange = $"{baseName}.error.exchange";
+
             // Main exchange and queue
-            var mainExchange = $"{exchangeName}.exchange";
             _channel.ExchangeDeclareAsync(mainExchange, ExchangeType.Direct, durable: true).GetAwaiter().GetResult();
             _channel.QueueDeclareAsync(settings.Msg, durable: true, exclusive: false, autoDelete: false).GetAwaiter().GetResult();
             _channel.QueueBindAsync(settings.Msg, mainExchange, routingKey: "").GetAwaiter().GetResult();
 
             // Retry exchange and queue (with TTL + dead-letter back to main)
-            var retryExchange = $"{exchangeName}.retry.exchange";
             _channel.ExchangeDeclareAsync(retryExchange, ExchangeType.Direct, durable: true).GetAwaiter().GetResult();
 
             var retryArgs = new Dictionary<string, object>
@@ -54,12 +57,11 @@ namespace Bazzuca.Infra.Services
             _channel.QueueBindAsync(settings.Retry, retryExchange, routingKey: "").GetAwaiter().GetResult();
 
             // Error exchange and queue (DLQ)
-            var errorExchange = $"{exchangeName}.error.exchange";
             _channel.ExchangeDeclareAsync(errorExchange, ExchangeType.Direct, durable: true).GetAwaiter().GetResult();
             _channel.QueueDeclareAsync(settings.Error, durable: true, exclusive: false, autoDelete: false).GetAwaiter().GetResult();
             _channel.QueueBindAsync(settings.Error, errorExchange, routingKey: "").GetAwaiter().GetResult();
 
-            _logger.LogInformation("RabbitMQ topology declared for {Exchange}", exchangeName);
+            _logger.LogInformation("RabbitMQ topology declared for {Exchange}", mainExchange);
         }
 
         public void Publish(string exchange, byte[] body, IDictionary<string, object> headers)

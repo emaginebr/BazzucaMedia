@@ -406,3 +406,6 @@ FodyWeavers.xsd
 .env
 .env.prod
 .env.local
+
+# Test payload files
+post.json
