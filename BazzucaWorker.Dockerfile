@@ -42,7 +42,7 @@ RUN mkdir -p /app/playwright-data && \
 EXPOSE 80
 
 # Copy published application
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 
 ENV ASPNETCORE_ENVIRONMENT=Docker
 

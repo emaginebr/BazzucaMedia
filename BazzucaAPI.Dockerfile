@@ -35,7 +35,7 @@ RUN mkdir -p /app/logs && \
 EXPOSE 80
 
 # Copy published application
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 
 ENV ASPNETCORE_ENVIRONMENT=Docker
 
