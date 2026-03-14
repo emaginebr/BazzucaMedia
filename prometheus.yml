@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "bazzuca-api"
+    static_configs:
+      - targets: ["bazzuca-api:80"]
+
+  - job_name: "bazzuca-worker"
+    static_configs:
+      - targets: ["bazzuca-worker:80"]

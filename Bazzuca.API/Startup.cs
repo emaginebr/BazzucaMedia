@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NAuth.DTO.Settings;
+using Prometheus;
 using System;
 using System.Net.Mime;
 using System.Text.Json;
@@ -100,6 +101,8 @@ namespace Bazzuca.API
 
             app.UseRouting();
 
+            app.UseHttpMetrics();
+
             // CORS deve vir ANTES de Authentication e Authorization
             app.UseCors("MyPolicy");
 
@@ -112,6 +115,7 @@ namespace Bazzuca.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMetrics();
             });
         }
     }

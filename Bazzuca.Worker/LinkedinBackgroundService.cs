@@ -9,8 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Prometheus;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +21,24 @@ namespace Bazzuca.Worker
 {
     public class LinkedinBackgroundService : BackgroundService
     {
+        private static readonly Counter LinkedinMessagesProcessed = Metrics.CreateCounter(
+            "linkedin_messages_processed_total",
+            "Total LinkedIn messages processed",
+            new CounterConfiguration { LabelNames = new[] { "status", "tenant" } });
+
+        private static readonly Histogram LinkedinProcessingDuration = Metrics.CreateHistogram(
+            "linkedin_processing_duration_seconds",
+            "Duration of LinkedIn post processing",
+            new HistogramConfiguration
+            {
+                LabelNames = new[] { "tenant" },
+                Buckets = Histogram.ExponentialBuckets(1, 2, 8) // 1s, 2s, 4s ... 128s
+            });
+
+        private static readonly Gauge LinkedinMessagesInProgress = Metrics.CreateGauge(
+            "linkedin_messages_in_progress",
+            "LinkedIn messages currently being processed");
+
         private readonly IRabbitAppService _rabbitAppService;
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
@@ -69,6 +89,9 @@ namespace Bazzuca.Worker
                 _logger.LogInformation("Processing LinkedIn post {PostId} for tenant {TenantId}",
                     postInfo.PostId, tenantId);
 
+                LinkedinMessagesInProgress.Inc();
+                var stopwatch = Stopwatch.StartNew();
+
                 using var scope = _serviceProvider.CreateScope();
 
                 // Create tenant-specific DbContext
@@ -81,12 +104,20 @@ namespace Bazzuca.Worker
                 {
                     await linkedinService.Process(postInfo, headers);
                     _logger.LogInformation("LinkedIn post {PostId} processed successfully", postInfo.PostId);
+                    LinkedinMessagesProcessed.WithLabels("success", tenantId).Inc();
                 }
                 catch (Exception ex)
                 {
                     // Retry/DLQ already handled inside LinkedinService.Process
                     _logger.LogError(ex, "LinkedIn post {PostId} processing failed (retry/DLQ handled by domain)",
                         postInfo.PostId);
+                    LinkedinMessagesProcessed.WithLabels("failure", tenantId).Inc();
+                }
+                finally
+                {
+                    stopwatch.Stop();
+                    LinkedinProcessingDuration.WithLabels(tenantId).Observe(stopwatch.Elapsed.TotalSeconds);
+                    LinkedinMessagesInProgress.Dec();
                 }
             });
 

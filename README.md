@@ -304,7 +304,7 @@ psql -h localhost -p 5434 -U bazzuca_user -d bazzuca_db < backup.sql
 
 ### Production
 
-Production deployment uses `docker-compose-prod.yml` with secrets from `.env.prod`:
+Production deployment uses `docker-compose-prod.yml` with secrets from `.env.prod`. In production, **PostgreSQL** and **RabbitMQ** are managed externally on the `emagine-network` — only the API and Worker containers are deployed.
 
 ```bash
 cp .env.prod.example .env.prod
@@ -319,7 +319,7 @@ docker compose --env-file .env.prod -f docker-compose-prod.yml up --build -d
 |----------|---------|-------------|
 | **Version and Tag** | Push to `main` | Auto-generates semantic version tag via GitVersion |
 | **Create Release** | After version tag | Creates GitHub Release and release branch (minor/major only) |
-| **Deploy Production** | Manual dispatch | SSH deploy to production server (API + Worker + RabbitMQ) |
+| **Deploy Production** | Manual dispatch | SSH deploy to production server (API + Worker) |
 
 ---
 
@@ -337,7 +337,7 @@ docker compose ps
 
 **Common causes:**
 - RabbitMQ container not started or unhealthy
-- Incorrect `RabbitMQ:HostName` in appsettings (use `bazzuca-rabbitmq` in Docker, `localhost` locally)
+- Incorrect `RabbitMQ:HostName` in appsettings (use `emagine-rabbitmq` in Docker, `localhost` locally)
 
 #### LinkedIn publishing fails
 
